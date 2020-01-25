@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/main_padding"
+    tools:context=".MainActivity">
+
+    <GridLayout
+        android:id="@+id/board"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBoardLines"
+        android:orientation="horizontal"
+        android:columnCount="3"
+        android:rowCount="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <ImageView
+            android:id="@+id/square11"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square12"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginLeft="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square13"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginLeft="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square21"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginTop="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square22"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginTop="@dimen/square_margin"
+            android:layout_marginLeft="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square23"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginTop="@dimen/square_margin"
+            android:layout_marginLeft="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square31"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginTop="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square32"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginTop="@dimen/square_margin"
+            android:layout_marginLeft="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+        <ImageView
+            android:id="@+id/square33"
+            android:layout_width="@dimen/square_width"
+            android:layout_height="@dimen/square_height"
+            android:layout_marginTop="@dimen/square_margin"
+            android:layout_marginLeft="@dimen/square_margin"
+            android:background="@color/colorBoardSquare" />
+
+    </GridLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
