@@ -2,7 +2,7 @@ package algie.parvin.othello.model
 
 class Game {
 
-    val boardSize = 3
+    var boardSize = 8
     var turn = 'W'
 
     var initialPosition: Array<CharArray>
@@ -176,7 +176,7 @@ class Game {
     }
 
     constructor() {
-        initialPosition = Array(3, {CharArray(3)})
+        initialPosition = Array(8, {CharArray(8)})
         initialPosition[1][1] = 'W'
         initialPosition[2][2] = 'W'
         initialPosition[1][2] = 'B'

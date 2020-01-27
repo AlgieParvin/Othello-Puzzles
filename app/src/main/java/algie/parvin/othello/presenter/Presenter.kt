@@ -10,14 +10,22 @@ class Presenter {
     private val game: Game
 
     private fun isSquareFree(square: Int): Boolean {
-        return !(game.position[square / 3][square % 3] in "WB")
+        return !(game.position[square / game.boardSize][square % game.boardSize] in "WB")
+    }
+
+    fun getBoardSize() : Int {
+        return game.boardSize
+    }
+
+    fun calculateSquareSize(boardWidth: Int) : Int {
+        return boardWidth / game.boardSize - 2 * (game.boardSize - 1)
     }
 
     fun handleMove(square: Int) {
         if (! isSquareFree(square)) {
             return
         }
-        game.makeMove(square / 3, square % 3)
+        game.makeMove(square / game.boardSize, square % game.boardSize)
         context.updateChips()
     }
 

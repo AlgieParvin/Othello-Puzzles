@@ -6,10 +6,35 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.widget.GridLayout
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var presenter: Presenter
+
+    private fun initializedSquaresOnGrid() {
+        val boardSize = presenter.getBoardSize()
+        board.columnCount = boardSize
+        board.rowCount = boardSize
+
+        for (i in 0 until boardSize * boardSize) {
+            var view = ImageView(this)
+            board.addView(view, i)
+            val param = GridLayout.LayoutParams(
+                GridLayout.spec(
+                    GridLayout.UNDEFINED, GridLayout.FILL, 1f
+                ),
+                GridLayout.spec(GridLayout.UNDEFINED, GridLayout.FILL, 1f)
+            )
+            param.width = 0
+            param.height = 0
+            view.layoutParams = param
+        }
+    }
 
     private fun setChipsOnBoard(white: List<Int>, black: List<Int>) {
         black.map {
@@ -37,10 +62,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        presenter = Presenter(this)
 
         removeActionAndStatusBars()
+        initializedSquaresOnGrid()
 
-        presenter = Presenter(this)
         attachListenersToSquares()
         setChipsOnBoard(presenter.getWhite(), presenter.getBlack())
     }

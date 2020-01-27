@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
-        </shape>
-    </item>
 
     <item android:top="@dimen/chip_padding"
         android:bottom="@dimen/chip_padding"
@@ -14,8 +9,8 @@
         <shape android:shape="oval" >
             <stroke
                 android:width="@dimen/chip_stroke"
-                android:color="@color/black"/>
-            <solid android:color="@color/black"/>
+                android:color="@color/white"/>
+            <solid android:color="@color/mainColor"/>
         </shape>
     </item>
 </layer-list>

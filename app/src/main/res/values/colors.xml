@@ -9,4 +9,7 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="mainColor">#FFC6C7</color>
+    <color name="secondaryColor">#FAEEE7</color>
 </resources>
