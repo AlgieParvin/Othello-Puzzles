@@ -1,46 +1,48 @@
 package algie.parvin.othello.presenter
 
-import algie.parvin.othello.MainActivity
+import algie.parvin.othello.PresenterInterface
+import algie.parvin.othello.model.CHIPS
 import algie.parvin.othello.model.Game
 import algie.parvin.othello.model.Position
 
 
-class Presenter {
+interface ViewInterface {
+    fun updateChips()
+}
 
-    private lateinit var context: MainActivity
+
+class Presenter(activity: ViewInterface) : PresenterInterface {
+
+    private var view: ViewInterface = activity
     private val game: Game
 
     private fun isSquareFree(square: Int): Boolean {
-        return !(game.position[square / game.boardSize][square % game.boardSize] in "WB")
+        return !(game.position[square / game.boardSize][square % game.boardSize] in CHIPS)
     }
 
-    fun getBoardSize() : Int {
+    override fun getBoardSize() : Int {
         return game.boardSize
     }
 
-    fun calculateSquareSize(boardWidth: Int) : Int {
-        return boardWidth / game.boardSize - 2 * (game.boardSize - 1)
-    }
-
-    fun handleMove(square: Int) {
+    override fun handleMove(square: Int) {
         if (! isSquareFree(square)) {
             return
         }
         game.makeMove(square / game.boardSize, square % game.boardSize)
-        context.updateChips()
+        view.updateChips()
     }
 
-    fun getWhite(): List<Int> {
+    override fun getWhite(): List<Int> {
         return game.whiteChips().map { it[0] * game.boardSize + it[1] }
     }
 
-    fun getBlack(): List<Int> {
+    override fun getBlack(): List<Int> {
         return game.blackChips().map { it[0] * game.boardSize + it[1] }
     }
 
-    constructor(activity: MainActivity) {
-        this.context = activity
+    init {
         game = Game()
+
         val black = ArrayList<IntArray>()
         black.add(intArrayOf(1, 1))
         black.add(intArrayOf(3, 3))
@@ -56,7 +58,6 @@ class Presenter {
         white.add(intArrayOf(0, 5))
         white.add(intArrayOf(2, 5))
         white.add(intArrayOf(7, 5))
-
 
         game.setNewPosition(Position(white, black))
     }

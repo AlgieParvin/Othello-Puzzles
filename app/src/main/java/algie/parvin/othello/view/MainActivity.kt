@@ -1,6 +1,7 @@
 package algie.parvin.othello
 
 import algie.parvin.othello.presenter.Presenter
+import algie.parvin.othello.presenter.ViewInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -9,9 +10,17 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.GridLayout
 
 
-class MainActivity : AppCompatActivity() {
+interface PresenterInterface {
+    fun getBoardSize(): Int
+    fun handleMove(square: Int)
+    fun getWhite(): List<Int>
+    fun getBlack(): List<Int>
+}
 
-    private lateinit var presenter: Presenter
+
+class MainActivity : AppCompatActivity(), ViewInterface {
+
+    private lateinit var presenter: PresenterInterface
 
     private fun initializedSquaresOnGrid() {
         val boardSize = presenter.getBoardSize()
@@ -52,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateChips() {
+    override fun updateChips() {
         setChipsOnBoard(presenter.getWhite(), presenter.getBlack())
     }
 
