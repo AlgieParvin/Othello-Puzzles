@@ -16,8 +16,8 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     private var view: ViewInterface = activity
     private val game: Game
 
-    private fun isSquareFree(square: Int): Boolean {
-        return !(game.position[square / game.boardSize][square % game.boardSize] in CHIPS)
+    private fun isSquareFree(row: Int, column: Int): Boolean {
+        return !(game.position[row][column] in CHIPS)
     }
 
     override fun getBoardSize() : Int {
@@ -25,10 +25,12 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     }
 
     override fun handleMove(square: Int) {
-        if (! isSquareFree(square)) {
+        val row = square / game.boardSize
+        val column = square % game.boardSize
+        if (!isSquareFree(row, column) or !game.isMoveValid(row, column)) {
             return
         }
-        game.makeMove(square / game.boardSize, square % game.boardSize)
+        game.makeMove(row, column)
         view.updateChips()
     }
 

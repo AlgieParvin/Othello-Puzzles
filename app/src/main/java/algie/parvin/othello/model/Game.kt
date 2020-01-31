@@ -1,5 +1,9 @@
 package algie.parvin.othello.model
 
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+
 const val BLACK = 'B'
 const val WHITE = 'W'
 val CHIPS = charArrayOf(BLACK, WHITE)
@@ -16,7 +20,13 @@ class Game(val boardSize: Int = 8) {
         position = Array(boardSize) { CharArray(boardSize) }
     }
 
-    private fun changeTurn() = if (turn == WHITE) turn = BLACK else turn = WHITE
+    private fun oppositeColor(color: Char) : Char {
+        return (if (turn == WHITE) BLACK else WHITE)
+    }
+
+    private fun changeTurn() {
+        turn = oppositeColor(turn)
+    }
 
     private fun reverseChipsInColumn(rowStart: Int, rowEnd: Int, column: Int) {
         for (i in rowStart until rowEnd) {
@@ -183,6 +193,88 @@ class Game(val boardSize: Int = 8) {
             }
         }
         return black
+    }
+
+    fun isMoveValid(row: Int, column: Int) : Boolean {
+        for (i in column + 2 until boardSize) {
+            if (!(position[row][i] in CHIPS)) {
+                break
+            }
+            if (position[row][i] == turn && position[row][i - 1] == oppositeColor(turn) ) {
+                return true
+            }
+        }
+        for (i in column - 2 downTo 0) {
+            if (!(position[row][i] in CHIPS)) {
+                break
+            }
+            if (position[row][i] == turn && position[row][i + 1] == oppositeColor(turn)) {
+                return true
+            }
+        }
+        for (i in row + 2 until boardSize) {
+            if (!(position[i][column] in CHIPS)) {
+                break
+            }
+            if (position[i][column] == turn && position[i - 1][column] == oppositeColor(turn)) {
+                return true
+            }
+        }
+        for (i in row - 2 downTo 0) {
+            if (!(position[i][column] in CHIPS)) {
+                break
+            }
+            if (position[i][column] == turn && position[i + 1][column] == oppositeColor(turn)) {
+                return true
+            }
+        }
+
+        for (i in 2..min(row, column)) {
+            if (!(position[row - i][column - i] in CHIPS)) {
+                break
+            }
+            if (position[row - i][column - i] == turn &&
+                position[row - i + 1][column - i + 1] == oppositeColor(turn)) {
+                return true
+            }
+        }
+
+        for (i in -1 downTo max(row, column) - (boardSize - 1)) {
+            if (!(position[row - i][column - i] in CHIPS)) {
+                break
+            }
+            if (position[row - i][column - i] == turn &&
+                position[row - i - 1][column - i - 1] == oppositeColor(turn)) {
+                return true
+            }
+        }
+
+        var i = row + 2
+        var j = column - 2
+        while (i < boardSize && j >= 0) {
+            if (!(position[i][j] in CHIPS)) {
+                break
+            }
+            if (position[i][j] == turn && position[i - 1][j + 1] == oppositeColor(turn)) {
+                return true
+            }
+            i++
+            j--
+        }
+
+        i = row - 1
+        j = column + 1
+        while (i >= 0 && j < boardSize) {
+            if (!(position[i][j] in CHIPS)) {
+                break
+            }
+            if (position[i][j] == turn && position[i + 1][j - 1] == oppositeColor(turn)) {
+                return true
+            }
+            i--
+            j++
+        }
+        return false
     }
 
     fun makeMove(row: Int, column: Int) {
