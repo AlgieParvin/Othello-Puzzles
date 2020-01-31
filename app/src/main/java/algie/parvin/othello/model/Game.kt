@@ -1,14 +1,22 @@
 package algie.parvin.othello.model
 
-class Game {
+const val BLACK = 'B'
+const val WHITE = 'W'
+val CHIPS = charArrayOf(BLACK, WHITE)
 
-    var boardSize = 8
-    var turn = 'W'
 
+class Game(val boardSize: Int = 8) {
+
+    private var turn = WHITE
     var initialPosition: Array<CharArray>
     var position: Array<CharArray>
 
-    private fun changeTurn() = if (turn == 'W') turn = 'B' else turn = 'W'
+    init {
+        initialPosition = Array(boardSize) { CharArray(boardSize) }
+        position = Array(boardSize) { CharArray(boardSize) }
+    }
+
+    private fun changeTurn() = if (turn == WHITE) turn = BLACK else turn = WHITE
 
     private fun reverseChipsInColumn(rowStart: Int, rowEnd: Int, column: Int) {
         for (i in rowStart until rowEnd) {
@@ -44,20 +52,22 @@ class Game {
 
     private fun updateChipsInColumn(row: Int, column: Int) {
         for (i in row + 1 until boardSize) {
-            if (!(position[i][column] in "WB")) {
+            if (!(position[i][column] in CHIPS)) {
                 break
             }
             if (position[i][column] == turn) {
                 reverseChipsInColumn(row, i, column)
+                break
             }
         }
 
         for (i in row - 1 downTo 0 step 1) {
-            if (!(position[i][column] in "WB")) {
+            if (!(position[i][column] in CHIPS)) {
                 break
             }
             if (position[i][column] == turn) {
                 reverseChipsInColumn(i, row, column)
+                break
             }
         }
     }
@@ -66,11 +76,12 @@ class Game {
         var i = row + 1
         var j = column + 1
         while (i < boardSize && j < boardSize) {
-            if (!(position[i][j] in "WB")) {
+            if (!(position[i][j] in CHIPS)) {
                 break
             }
             if (position[i][j] == turn) {
                 reverseChipsInMainDiagonal(row, i, column, j)
+                break
             }
             i++
             j++
@@ -78,12 +89,13 @@ class Game {
 
         i = row - 1
         j = column - 1
-        while (i > 0 && j > 0) {
-            if (!(position[i][j] in "WB")) {
+        while (i >= 0 && j >= 0) {
+            if (!(position[i][j] in CHIPS)) {
                 break
             }
             if (position[i][j] == turn) {
                 reverseChipsInMainDiagonal(i, row, j, column)
+                break
             }
             i--
             j--
@@ -94,11 +106,12 @@ class Game {
         var i = row + 1
         var j = column - 1
         while (i < boardSize && j >= 0) {
-            if (!(position[i][j] in "WB")) {
+            if (!(position[i][j] in CHIPS)) {
                 break
             }
             if (position[i][j] == turn) {
                 reverseChipsInAntiDiagonal(row, i, column, j)
+                break
             }
             i++
             j--
@@ -107,11 +120,12 @@ class Game {
         i = row - 1
         j = column + 1
         while (i >= 0 && j < boardSize) {
-            if (!(position[i][j] in "WB")) {
+            if (!(position[i][j] in CHIPS)) {
                 break
             }
             if (position[i][j] == turn) {
                 reverseChipsInAntiDiagonal(i, row, j, column)
+                break
             }
             i--
             j++
@@ -120,20 +134,22 @@ class Game {
 
     private fun updateChipsInRow(row: Int, column: Int) {
         for (i in column + 1 until boardSize) {
-            if (!(position[row][i] in "WB")) {
+            if (!(position[row][i] in CHIPS)) {
                 break
             }
             if (position[row][i] == turn) {
                 reverseChipsInRow(row, column, i)
+                break
             }
         }
 
         for (i in column - 1 downTo 0 step 1) {
-            if (!(position[row][i] in "WB")) {
+            if (!(position[row][i] in CHIPS)) {
                 break
             }
             if (position[row][i] == turn) {
                 reverseChipsInRow(row, i, column)
+                break
             }
         }
     }
@@ -149,7 +165,7 @@ class Game {
         val white = ArrayList<IntArray>()
         for (i in 0 until boardSize) {
             for (j in 0 until boardSize) {
-                if (position[i][j] == 'W') {
+                if (position[i][j] == WHITE) {
                     white.add(intArrayOf(i, j))
                 }
             }
@@ -161,7 +177,7 @@ class Game {
         val black = ArrayList<IntArray>()
         for (i in 0 until boardSize) {
             for (j in 0 until boardSize) {
-                if (position[i][j] == 'B') {
+                if (position[i][j] == BLACK) {
                     black.add(intArrayOf(i, j))
                 }
             }
@@ -175,13 +191,17 @@ class Game {
         changeTurn()
     }
 
-    constructor() {
-        initialPosition = Array(8, {CharArray(8)})
-        initialPosition[1][1] = 'W'
-        initialPosition[2][2] = 'W'
-        initialPosition[1][2] = 'B'
-        initialPosition[2][1] = 'B'
-
+    fun setNewPosition(newPosition: Position) {
+        newPosition.whiteChips.map { chip -> initialPosition[chip[0]][chip[1]] = WHITE }
+        newPosition.blackChips.map { chip -> initialPosition[chip[0]][chip[1]] = BLACK }
         position = initialPosition.map { it.clone() }.toTypedArray()
+    }
+
+    fun setMoveWhite() {
+        turn = WHITE
+    }
+
+    fun setMoveBlack() {
+        turn = BLACK
     }
 }

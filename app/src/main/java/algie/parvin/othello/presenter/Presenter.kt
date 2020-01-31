@@ -2,6 +2,7 @@ package algie.parvin.othello.presenter
 
 import algie.parvin.othello.MainActivity
 import algie.parvin.othello.model.Game
+import algie.parvin.othello.model.Position
 
 
 class Presenter {
@@ -40,5 +41,23 @@ class Presenter {
     constructor(activity: MainActivity) {
         this.context = activity
         game = Game()
+        val black = ArrayList<IntArray>()
+        black.add(intArrayOf(1, 1))
+        black.add(intArrayOf(3, 3))
+        black.add(intArrayOf(4, 4))
+        black.add(intArrayOf(1, 5))
+        black.add(intArrayOf(3, 5))
+        black.add(intArrayOf(4, 5))
+        black.add(intArrayOf(6, 5))
+
+        val white = ArrayList<IntArray>()
+        white.add(intArrayOf(0, 0))
+        white.add(intArrayOf(2, 2))
+        white.add(intArrayOf(0, 5))
+        white.add(intArrayOf(2, 5))
+        white.add(intArrayOf(7, 5))
+
+
+        game.setNewPosition(Position(white, black))
     }
 }
