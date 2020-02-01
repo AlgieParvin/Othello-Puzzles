@@ -8,6 +8,7 @@ import algie.parvin.othello.model.Position
 
 interface ViewInterface {
     fun updateChips()
+    fun animateBoardCreation()
 }
 
 
