@@ -71,8 +71,13 @@ class MainActivity : AppCompatActivity(), ViewInterface {
     }
 
     override fun animateBoardCreation() {
-        val avd = board.background as AnimatedVectorDrawable
-        avd.start()
+        val drawable = board.background
+        if (drawable is AnimatedVectorDrawableCompat) {
+            drawable.start()
+        }
+        else if (drawable is AnimatedVectorDrawable) {
+            drawable.start()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
