@@ -17,10 +17,6 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     private var view: ViewInterface = activity
     private val game: Game
 
-    private fun isSquareFree(row: Int, column: Int): Boolean {
-        return !(game.position[row][column] in CHIPS)
-    }
-
     override fun getBoardSize() : Int {
         return game.boardSize
     }
@@ -28,7 +24,7 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     override fun handleMove(square: Int) {
         val row = square / game.boardSize
         val column = square % game.boardSize
-        if (!isSquareFree(row, column) or !game.isMoveValid(row, column)) {
+        if (!game.isSquareFree(row, column) or !game.isMoveValid(row, column)) {
             return
         }
         game.makeMove(row, column)
@@ -46,22 +42,33 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     init {
         game = Game()
 
-        val black = ArrayList<IntArray>()
-        black.add(intArrayOf(1, 1))
-        black.add(intArrayOf(3, 3))
-        black.add(intArrayOf(4, 4))
-        black.add(intArrayOf(1, 5))
-        black.add(intArrayOf(3, 5))
-        black.add(intArrayOf(4, 5))
-        black.add(intArrayOf(6, 5))
-
         val white = ArrayList<IntArray>()
-        white.add(intArrayOf(0, 0))
-        white.add(intArrayOf(2, 2))
-        white.add(intArrayOf(0, 5))
-        white.add(intArrayOf(2, 5))
-        white.add(intArrayOf(7, 5))
+        white.add(intArrayOf(2, 0))
+        white.add(intArrayOf(7, 0))
+        white.add(intArrayOf(1, 1))
+        white.add(intArrayOf(0, 4))
+        white.add(intArrayOf(5, 6))
+        white.add(intArrayOf(7, 6))
+        white.add(intArrayOf(6, 2))
+
+        val black = ArrayList<IntArray>()
+        black.add(intArrayOf(1, 0))
+        black.add(intArrayOf(0, 1))
+        black.add(intArrayOf(2, 1))
+        black.add(intArrayOf(3, 1))
+        black.add(intArrayOf(4, 1))
+        black.add(intArrayOf(5, 1))
+        black.add(intArrayOf(6, 1))
+        black.add(intArrayOf(0, 2))
+        black.add(intArrayOf(3, 2))
+        black.add(intArrayOf(4, 2))
+        black.add(intArrayOf(5, 2))
+        black.add(intArrayOf(0, 3))
+        black.add(intArrayOf(4, 3))
+        black.add(intArrayOf(1, 6))
+        black.add(intArrayOf(4, 6))
 
         game.setNewPosition(Position(white, black))
+        game.setMoveBlack()
     }
 }
