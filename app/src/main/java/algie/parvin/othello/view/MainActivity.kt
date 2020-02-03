@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.GridLayout
@@ -66,8 +67,13 @@ class MainActivity : AppCompatActivity(), ViewInterface {
         }
     }
 
+    fun reverseChip(index: Int) {
+
+    }
+
     override fun updateChips() {
         setChipsOnBoard(presenter.getWhite(), presenter.getBlack())
+        reverseChip(1)
     }
 
     override fun animateBoardCreation() {

@@ -203,115 +203,38 @@ class Game(val boardSize: Int = 8) {
         return black
     }
 
+    private fun isMoveValidInRange(row: Int, column: Int, chips: List<Char>) : Boolean {
+        if (chips.getOrNull(0) == turn) {
+            return false
+        }
+        for (chip in chips) {
+            if (chip !in CHIPS) {
+                return false
+            }
+            if (chip == turn) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun isMoveValid(row: Int, column: Int) : Boolean {
+        if (row >= boardSize || row < 0 || column >= boardSize || column < 0) {
+            return false
+        }
+
         if (!isSquareFree(row, column)) {
             return false
         }
 
-        for (i in column + 2 until boardSize) {
-            if (position[row][i] !in CHIPS || position[row][i - 1] !in CHIPS) {
-                break
-            }
-            if (position[row][i] == turn) {
-                if (position[row][i - 1] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-        }
-        for (i in column - 2 downTo 0) {
-            if (position[row][i] !in CHIPS || position[row][i + 1] !in CHIPS) {
-                break
-            }
-            if (position[row][i] == turn) {
-                if (position[row][i + 1] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-        }
-
-        for (i in row + 2 until boardSize) {
-            if (position[i][column] !in CHIPS || position[i - 1][column] !in CHIPS) {
-                break
-            }
-            if (position[i][column] == turn) {
-                if (position[i - 1][column] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-        }
-        for (i in row - 2 downTo 0) {
-            if (position[i][column] !in CHIPS || position[i + 1][column] !in CHIPS) {
-                break
-            }
-            if (position[i][column] == turn) {
-                if (position[i + 1][column] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-        }
-
-        for (i in 2..min(row, column)) {
-            if (position[row - i][column - i] !in CHIPS ||
-                position[row - i + 1][column - i + 1] !in CHIPS) {
-                break
-            }
-            if (position[row - i][column - i] == turn) {
-                if (position[row - i + 1][column - i + 1] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-        }
-
-        for (i in -2 downTo max(row, column) - (boardSize - 1)) {
-            if (position[row - i][column - i] !in CHIPS ||
-                position[row - i - 1][column - i - 1] !in CHIPS) {
-                break
-            }
-            if (position[row - i][column - i] == turn) {
-                if (position[row - i - 1][column - i - 1] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-        }
-
-        var i = row + 2
-        var j = column - 2
-        while (i < boardSize && j >= 0) {
-            if (position[i][j] !in CHIPS || position[i - 1][j + 1] !in CHIPS) {
-                break
-            }
-            if (position[i][j] == turn) {
-                if (position[i - 1][j + 1] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-            i++
-            j--
-        }
-
-        i = row - 2
-        j = column + 2
-        while (i >= 0 && j < boardSize) {
-            if (position[i][j] !in CHIPS || position[i + 1][j - 1] !in CHIPS) {
-                break
-            }
-            if (position[i][j] == turn) {
-                if (position[i + 1][j - 1] == oppositeColor(turn)) {
-                    return true
-                }
-                break
-            }
-            i--
-            j++
-        }
-        return false
+        return isMoveValidInRange(row, column, (column+1 until boardSize).map { position[row][it] })
+                || (isMoveValidInRange(row, column, (column-1 downTo 0).map { position[row][it] }))
+                || (isMoveValidInRange(row, column, (row+1 until boardSize).map { position[it][column] }))
+                || (isMoveValidInRange(row, column, (row-1 downTo 0).map { position[it][column] }))
+                || (isMoveValidInRange(row, column, (1..min(row, column)).map { position[row - it][column - it] }))
+                || (isMoveValidInRange(row, column, (1..min(boardSize - 1 - row, boardSize - 1 - column)).map { position[row + it][column + it] }))
+                || (isMoveValidInRange(row, column, (1..min(boardSize - row - 1, column)).map { position[row + it][column - it] }))
+                || (isMoveValidInRange(row, column, (1..min(row, boardSize - 1 - column)).map { position[row - it][column + it] }))
     }
 
     fun makeMove(row: Int, column: Int) {
