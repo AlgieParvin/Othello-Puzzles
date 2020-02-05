@@ -3,15 +3,13 @@ package algie.parvin.othello
 import algie.parvin.othello.presenter.Presenter
 import algie.parvin.othello.presenter.ViewInterface
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.View
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.GridLayout
+import androidx.core.view.setPadding
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 
@@ -20,6 +18,7 @@ interface PresenterInterface {
     fun handleMove(square: Int)
     fun getWhite(): List<Int>
     fun getBlack(): List<Int>
+
 }
 
 
@@ -48,11 +47,11 @@ class MainActivity : AppCompatActivity(), ViewInterface {
         }
     }
 
-    private fun setChipsOnBoard(white: List<Int>, black: List<Int>) {
+    override fun setChipsOnBoard(white: List<Int>, black: List<Int>) {
         black.map {
-            (board.getChildAt(it) as ImageView).setBackgroundResource(R.drawable.black_chip) }
+            (board.getChildAt(it) as ImageView).setImageResource(R.drawable.black_to_white_avd) }
         white.map {
-            (board.getChildAt(it) as ImageView).setBackgroundResource(R.drawable.white_chip) }
+            (board.getChildAt(it) as ImageView).setImageResource(R.drawable.white_to_black_avd) }
     }
 
     private fun removeActionAndStatusBars() {
@@ -61,19 +60,25 @@ class MainActivity : AppCompatActivity(), ViewInterface {
     }
 
     private fun attachListenersToSquares() {
-        val squareCount = board.getChildCount()
-        for (i in 0 until squareCount) {
-            board.getChildAt(i).setOnClickListener({ v -> presenter.handleMove(i)} )
+        for (i in 0 until board.childCount) {
+            board.getChildAt(i).setOnClickListener { presenter.handleMove(i)}
         }
     }
 
-    fun reverseChip(index: Int) {
+    private fun reverseChip(index: Int, changeToWhite: Boolean) {
+        if (changeToWhite) {
+            (board.getChildAt(index) as ImageView).setImageResource(R.drawable.black_to_white_avd)
+        } else {
+            (board.getChildAt(index) as ImageView).setImageResource(R.drawable.white_to_black_avd)
+        }
 
-    }
-
-    override fun updateChips() {
-        setChipsOnBoard(presenter.getWhite(), presenter.getBlack())
-        reverseChip(1)
+        val drawable = (board.getChildAt(index) as ImageView).drawable
+        if (drawable is AnimatedVectorDrawableCompat) {
+            drawable.start()
+        }
+        else if (drawable is AnimatedVectorDrawable) {
+            drawable.start()
+        }
     }
 
     override fun animateBoardCreation() {
@@ -84,6 +89,10 @@ class MainActivity : AppCompatActivity(), ViewInterface {
         else if (drawable is AnimatedVectorDrawable) {
             drawable.start()
         }
+    }
+
+    override fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean) {
+        chipIndices.map { i -> reverseChip(i, reverseToWhite) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

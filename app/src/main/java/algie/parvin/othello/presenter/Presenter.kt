@@ -1,21 +1,22 @@
 package algie.parvin.othello.presenter
 
 import algie.parvin.othello.PresenterInterface
-import algie.parvin.othello.model.CHIPS
 import algie.parvin.othello.model.Game
 import algie.parvin.othello.model.Position
+import algie.parvin.othello.model.WHITE
 
 
 interface ViewInterface {
-    fun updateChips()
+    fun setChipsOnBoard(white: List<Int>, black: List<Int>)
     fun animateBoardCreation()
+    fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean)
 }
 
 
 class Presenter(activity: ViewInterface) : PresenterInterface {
 
     private var view: ViewInterface = activity
-    private val game: Game
+    private val game: Game = Game()
 
     override fun getBoardSize() : Int {
         return game.boardSize
@@ -24,11 +25,21 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     override fun handleMove(square: Int) {
         val row = square / game.boardSize
         val column = square % game.boardSize
+        val isWhiteMove = game.turn == WHITE
+
         if (!game.isSquareFree(row, column) or !game.isMoveValid(row, column)) {
             return
         }
-        game.makeMove(row, column)
-        view.updateChips()
+        val chips = game.makeMove(row, column)
+        val indices = chips.map { it[0] * game.boardSize + it[1] }
+
+        if (isWhiteMove) {
+            view.setChipsOnBoard(listOf(square), listOf())
+        } else {
+            view.setChipsOnBoard(listOf(), listOf(square))
+        }
+
+        view.reverseChips(indices, isWhiteMove)
     }
 
     override fun getWhite(): List<Int> {
@@ -40,26 +51,16 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
     }
 
     init {
-        game = Game()
 
         val black = ArrayList<IntArray>()
-        black.add(intArrayOf(1, 1))
-        black.add(intArrayOf(2, 2))
         black.add(intArrayOf(3, 3))
-        black.add(intArrayOf(5, 5))
-        black.add(intArrayOf(6, 6))
-        black.add(intArrayOf(6, 2))
-        black.add(intArrayOf(5, 3))
-        black.add(intArrayOf(3, 5))
-        black.add(intArrayOf(2, 6))
+        black.add(intArrayOf(4, 4))
 
         val white = ArrayList<IntArray>()
-        white.add(intArrayOf(0, 0))
-        white.add(intArrayOf(7, 1))
-        white.add(intArrayOf(1, 7))
-        white.add(intArrayOf(7, 7))
+        white.add(intArrayOf(4, 3))
+        white.add(intArrayOf(3, 4))
 
         game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
+        game.setMoveBlack()
     }
 }

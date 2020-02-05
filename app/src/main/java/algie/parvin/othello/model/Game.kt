@@ -9,7 +9,8 @@ val CHIPS = charArrayOf(BLACK, WHITE)
 
 class Game(val boardSize: Int = 8) {
 
-    private var turn = WHITE
+    var turn = WHITE
+        private set
     var initialPosition = Array(boardSize) { CharArray(boardSize) }
     var position: Array<CharArray>
 
@@ -17,48 +18,62 @@ class Game(val boardSize: Int = 8) {
         position = Array(boardSize) { CharArray(boardSize) }
     }
 
-    private fun oppositeColor(color: Char) : Char {
+    private fun oppositeColor() : Char {
         return (if (turn == WHITE) BLACK else WHITE)
     }
 
     private fun changeTurn() {
-        turn = oppositeColor(turn)
+        turn = oppositeColor()
     }
 
-    private fun reverseChipsInRange(chips: List<IntArray>) {
+    private fun reverseChipsInRange(chips: List<IntArray>) : List<IntArray> {
+        val reversedChips = ArrayList<IntArray>()
         for (indices in chips) {
             if (position[indices[0]][indices[1]] == turn) {
                 break
             }
             position[indices[0]][indices[1]] = turn
+            reversedChips.add(indices)
         }
+        return reversedChips
     }
 
-    private fun updateChips(row: Int, column: Int) {
+    private fun updateChips(row: Int, column: Int) : List<IntArray> {
+        val chips = ArrayList<IntArray>()
         if (isMoveValidInRange(row, column, (column-1 downTo 0).map { position[row][it] })) {
-            reverseChipsInRange((column-1 downTo 0).map { intArrayOf(row, it) })
+            chips.addAll(
+                reverseChipsInRange((column-1 downTo 0).map { intArrayOf(row, it) }))
         }
         if (isMoveValidInRange(row, column, (column+1 until boardSize).map { position[row][it] })) {
-            reverseChipsInRange((column+1 until boardSize).map { intArrayOf(row, it) })
+            chips.addAll(
+                reverseChipsInRange((column+1 until boardSize).map { intArrayOf(row, it) }))
         }
         if (isMoveValidInRange(row, column, (row+1 until boardSize).map { position[it][column] })) {
-            reverseChipsInRange((row+1 until boardSize).map { intArrayOf(it, column) })
+            chips.addAll(
+                reverseChipsInRange((row+1 until boardSize).map { intArrayOf(it, column) }))
         }
         if (isMoveValidInRange(row, column, (row-1 downTo 0).map { position[it][column] })) {
-            reverseChipsInRange((row-1 downTo 0).map { intArrayOf(it, column) })
+            chips.addAll(
+                reverseChipsInRange((row-1 downTo 0).map { intArrayOf(it, column) }))
         }
         if (isMoveValidInRange(row, column, (1..min(row, column)).map { position[row - it][column - it] })) {
-            reverseChipsInRange((1..min(row, column)).map { intArrayOf(row - it, column - it) })
+            chips.addAll(
+                reverseChipsInRange((1..min(row, column)).map { intArrayOf(row - it, column - it) }))
         }
         if (isMoveValidInRange(row, column, (1..min(boardSize - 1 - row, boardSize - 1 - column)).map { position[row + it][column + it] })) {
-            reverseChipsInRange((1..min(boardSize - 1 - row, boardSize - 1 - column)).map { intArrayOf(row + it, column + it) })
+            chips.addAll(
+                reverseChipsInRange((1..min(boardSize - 1 - row, boardSize - 1 - column)).map { intArrayOf(row + it, column + it) }))
         }
         if (isMoveValidInRange(row, column, (1..min(boardSize - row - 1, column)).map { position[row + it][column - it] })) {
-            reverseChipsInRange((1..min(boardSize - row - 1, column)).map { intArrayOf(row + it, column - it) })
+            chips.addAll(
+                reverseChipsInRange((1..min(boardSize - row - 1, column)).map { intArrayOf(row + it, column - it) }))
         }
         if (isMoveValidInRange(row, column, (1..min(row, boardSize - 1 - column)).map { position[row - it][column + it] })) {
-            reverseChipsInRange((1..min(row, boardSize - 1 - column)).map { intArrayOf(row - it, column + it) })
+            chips.addAll(
+                reverseChipsInRange((1..min(row, boardSize - 1 - column)).map { intArrayOf(row - it, column + it) }))
         }
+
+        return chips
     }
 
     fun isSquareFree(row: Int, column: Int): Boolean {
@@ -126,10 +141,11 @@ class Game(val boardSize: Int = 8) {
                 || (isMoveValidInRange(row, column, (1..min(row, boardSize - 1 - column)).map { position[row - it][column + it] }))
     }
 
-    fun makeMove(row: Int, column: Int) {
+    fun makeMove(row: Int, column: Int): List<IntArray> {
         position[row][column] = turn
-        updateChips(row, column)
+        val chips = updateChips(row, column)
         changeTurn()
+        return chips
     }
 
     fun setNewPosition(newPosition: Position) {
