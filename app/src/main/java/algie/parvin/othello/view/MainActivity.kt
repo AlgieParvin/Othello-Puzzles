@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), ViewInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        presenter = Presenter(this)
+        presenter = Presenter(this, application)
 
         removeActionAndStatusBars()
         initializedSquaresOnGrid()

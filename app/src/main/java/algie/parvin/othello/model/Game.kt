@@ -1,5 +1,6 @@
 package algie.parvin.othello.model
 
+import algie.parvin.othello.model.db.Puzzle
 import kotlin.math.min
 
 const val BLACK = 'B'
@@ -7,15 +8,24 @@ const val WHITE = 'W'
 val CHIPS = charArrayOf(BLACK, WHITE)
 
 
-class Game(val boardSize: Int = 8) {
+interface DBRepository {
+    fun updatePuzzle(puzzle: Puzzle)
+    fun getAllPuzzles() : List<Puzzle>
+}
 
+
+class Game(val boardSize: Int = 8, val repository: DBRepository) {
+
+    private var puzzleList: List<Puzzle>
     var turn = WHITE
         private set
-    var initialPosition = Array(boardSize) { CharArray(boardSize) }
+    var puzzle: Puzzle
     var position: Array<CharArray>
 
     init {
-        position = Array(boardSize) { CharArray(boardSize) }
+        puzzleList = repository.getAllPuzzles()
+        puzzle = puzzleList[0]
+        position = puzzle.getInitialPosition().map { it.clone() }.toTypedArray()
     }
 
     private fun oppositeColor() : Char {
@@ -148,10 +158,9 @@ class Game(val boardSize: Int = 8) {
         return chips
     }
 
-    fun setNewPosition(newPosition: Position) {
-        newPosition.whiteChips.map { chip -> initialPosition[chip[0]][chip[1]] = WHITE }
-        newPosition.blackChips.map { chip -> initialPosition[chip[0]][chip[1]] = BLACK }
-        position = initialPosition.map { it.clone() }.toTypedArray()
+    fun setNewPosition(index: Int) {
+        puzzle = puzzleList[index]
+        position = puzzle.getInitialPosition().map { it.clone() }.toTypedArray()
     }
 
     fun setMoveWhite() {

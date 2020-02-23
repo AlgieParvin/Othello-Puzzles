@@ -1,16 +1,20 @@
 package algie.parvin.othello
 
-import algie.parvin.othello.model.BLACK
-import algie.parvin.othello.model.Game
-import algie.parvin.othello.model.Position
-import algie.parvin.othello.model.WHITE
+import algie.parvin.othello.model.*
+import algie.parvin.othello.model.db.Puzzle
 import org.junit.Test
 import org.junit.Assert.*
 
 
 class ModelGameChipsReverseUnitTest {
 
-    private var game: Game = Game(boardSize = 8)
+    private fun mockRepository(puzzleList: List<Puzzle>) : DBRepository {
+       return object : DBRepository {
+            override fun updatePuzzle(puzzle: Puzzle) { }
+
+            override fun getAllPuzzles(): List<Puzzle> { return puzzleList }
+        }
+    }
 
     private fun assertEqualChips(boardFromGame: Array<CharArray>, boardExpected: Array<CharArray>) {
         assertEquals(boardExpected.size, boardFromGame.size)
@@ -18,6 +22,26 @@ class ModelGameChipsReverseUnitTest {
         boardExpected.indices.map {
                 row -> assertArrayEquals(boardExpected[row], boardFromGame[row])
         }
+    }
+
+    private fun testRealBoardIsEqualToTestBoard(
+        white: List<IntArray>, black: List<IntArray>, rowMove: Int, columnMove: Int, move: Char
+    ) {
+        val puzzleList = listOf(Puzzle(1, 8, black, white, false))
+        val repo = mockRepository(puzzleList)
+        val board = Array(puzzleList[0].boardSize) { CharArray(puzzleList[0].boardSize) }
+        white.map { array -> board[array[0]][array[1]] = move }
+        black.map { array -> board[array[0]][array[1]] = move }
+        board[rowMove][columnMove] = move
+
+        val game = Game(boardSize = puzzleList[0].boardSize, repository = repo)
+        if (move == BLACK) {
+            game.setMoveBlack()
+        } else {
+            game.setMoveWhite()
+        }
+        game.makeMove(rowMove, columnMove)
+        assertEqualChips(game.position, board)
     }
 
     @Test
@@ -42,15 +66,7 @@ class ModelGameChipsReverseUnitTest {
         black.add(intArrayOf(6, 3))
         black.add(intArrayOf(6, 5))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        white.map { array -> board[array[0]][array[1]] = BLACK }
-        black.map { array -> board[array[0]][array[1]] = BLACK }
-        board[4][3] = BLACK
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveBlack()
-        game.makeMove(4, 3)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 4, 3, BLACK)
     }
 
     @Test
@@ -75,17 +91,9 @@ class ModelGameChipsReverseUnitTest {
         white.add(intArrayOf(6, 3))
         white.add(intArrayOf(6, 5))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[4][3] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(4, 3)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 4, 3, WHITE)
     }
-
+//
     @Test
     fun white_reverseManyChipsInRowsAndColumns() {
         val black = ArrayList<IntArray>()
@@ -106,15 +114,7 @@ class ModelGameChipsReverseUnitTest {
         white.add(intArrayOf(0, 4))
         white.add(intArrayOf(7, 4))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[4][4] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(4, 4)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 4, 4, WHITE)
     }
 
     @Test
@@ -136,19 +136,12 @@ class ModelGameChipsReverseUnitTest {
         white.add(intArrayOf(1, 7))
         white.add(intArrayOf(7, 7))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[4][4] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(4, 4)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 4, 4, WHITE)
     }
 
     @Test
     fun white_BlackChipsAfterWhiteWontReverse() {
+        val boardSize = 8
         val black = ArrayList<IntArray>()
         black.add(intArrayOf(1, 1))
         black.add(intArrayOf(3, 3))
@@ -165,8 +158,8 @@ class ModelGameChipsReverseUnitTest {
         white.add(intArrayOf(2, 5))
         white.add(intArrayOf(7, 5))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        (2 until game.boardSize).map { i -> board[i][5] = WHITE }
+        val board = Array(boardSize) { CharArray(boardSize) }
+        (2 until boardSize).map { i -> board[i][5] = WHITE }
         board[0][5] = WHITE
         board[2][2] = WHITE
         board[0][0] = WHITE
@@ -174,7 +167,11 @@ class ModelGameChipsReverseUnitTest {
         board[4][4] = WHITE
         board[1][5] = BLACK
         board[1][1] = BLACK
-        game.setNewPosition(Position(white, black))
+
+        val puzzleList = listOf(Puzzle(1, 8, black, white, false))
+        val repo = mockRepository(puzzleList)
+
+        val game = Game(boardSize = boardSize, repository = repo)
         game.setMoveWhite()
         game.makeMove(5, 5)
         assertEqualChips(game.position, board)
@@ -182,93 +179,65 @@ class ModelGameChipsReverseUnitTest {
 
     @Test
     fun white_reverseFromLeftUpperCorner() {
+        val boardSize = 8
         val black = ArrayList<IntArray>()
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, 0)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(0, i)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, 0)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(0, i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, i)) }
 
         val white = ArrayList<IntArray>()
         white.add(intArrayOf(0, 7))
         white.add(intArrayOf(7, 0))
         white.add(intArrayOf(7, 7))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[0][0] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(0, 0)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 0, 0, WHITE)
     }
 
     @Test
     fun white_reverseFromRightUpperCorner() {
+        val boardSize = 8
         val black = ArrayList<IntArray>()
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, game.boardSize - 1)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(0, i)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, game.boardSize - 1 - i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, boardSize - 1)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(0, i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, boardSize - 1 - i)) }
 
         val white = ArrayList<IntArray>()
         white.add(intArrayOf(7, 7))
         white.add(intArrayOf(0, 0))
         white.add(intArrayOf(7, 0))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[0][7] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(0, 7)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 0, 7, WHITE)
     }
 
     @Test
     fun white_reverseFromRightLowerCorner() {
+        val boardSize = 8
         val black = ArrayList<IntArray>()
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, game.boardSize - 1)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(game.boardSize - 1, i)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, boardSize - 1)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(boardSize - 1, i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, i)) }
 
         val white = ArrayList<IntArray>()
         white.add(intArrayOf(0, 7))
         white.add(intArrayOf(7, 0))
         white.add(intArrayOf(0, 0))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[7][7] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(7, 7)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 7, 7, WHITE)
     }
 
     @Test
     fun white_reverseFromLeftLowerCorner() {
+        val boardSize = 8
         val black = ArrayList<IntArray>()
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, 0)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(game.boardSize - 1, i)) }
-        (1 until game.boardSize - 1).map { i -> black.add(intArrayOf(i, game.boardSize - 1 - i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, 0)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(boardSize - 1, i)) }
+        (1 until boardSize - 1).map { i -> black.add(intArrayOf(i, boardSize - 1 - i)) }
 
         val white = ArrayList<IntArray>()
         white.add(intArrayOf(0, 0))
         white.add(intArrayOf(7, 7))
         white.add(intArrayOf(0, 7))
 
-        val board = Array(game.boardSize) { CharArray(game.boardSize) }
-        black.map { array -> board[array[0]][array[1]] = WHITE }
-        white.map { array -> board[array[0]][array[1]] = WHITE }
-        board[7][0] = WHITE
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveWhite()
-        game.makeMove(7, 0)
-        assertEqualChips(game.position, board)
+        testRealBoardIsEqualToTestBoard(white, black, 7, 0, WHITE)
     }
 }

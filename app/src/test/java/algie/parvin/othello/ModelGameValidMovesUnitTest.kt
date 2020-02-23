@@ -1,7 +1,9 @@
 package algie.parvin.othello
 
+import algie.parvin.othello.model.DBRepository
 import algie.parvin.othello.model.Game
 import algie.parvin.othello.model.Position
+import algie.parvin.othello.model.db.Puzzle
 import org.junit.Assert
 import org.junit.Test
 import java.util.logging.Logger
@@ -11,40 +13,50 @@ class ModelGameValidMovesUnitTest {
 
     private val logger = Logger.getLogger(ModelGameValidMovesUnitTest::class.java.name)
 
-    private var game = Game(boardSize = 8)
+    object dummyRepo : DBRepository {
+        override fun updatePuzzle(puzzle: Puzzle) { }
+
+        override fun getAllPuzzles(): List<Puzzle> {
+            val white = ArrayList<IntArray>()
+            white.add(intArrayOf(2, 0))
+            white.add(intArrayOf(7, 0))
+            white.add(intArrayOf(1, 1))
+            white.add(intArrayOf(0, 4))
+            white.add(intArrayOf(5, 6))
+            white.add(intArrayOf(7, 6))
+            white.add(intArrayOf(6, 2))
+
+            val black = ArrayList<IntArray>()
+            black.add(intArrayOf(1, 0))
+            black.add(intArrayOf(0, 1))
+            black.add(intArrayOf(2, 1))
+            black.add(intArrayOf(3, 1))
+            black.add(intArrayOf(4, 1))
+            black.add(intArrayOf(5, 1))
+            black.add(intArrayOf(6, 1))
+            black.add(intArrayOf(0, 2))
+            black.add(intArrayOf(3, 2))
+            black.add(intArrayOf(4, 2))
+            black.add(intArrayOf(5, 2))
+            black.add(intArrayOf(0, 3))
+            black.add(intArrayOf(4, 3))
+            black.add(intArrayOf(1, 6))
+            black.add(intArrayOf(4, 6))
+
+            return listOf(Puzzle(1, 8, black, white, false))
+        }
+    }
+
+    private var game: Game
+
     private var validWhiteMoves: ArrayList<IntArray>
     private var invalidWhiteMoves: ArrayList<IntArray>
     private var validBlackMoves: ArrayList<IntArray>
     private var invalidBlackMoves: ArrayList<IntArray>
 
     init {
-        val white = ArrayList<IntArray>()
-        white.add(intArrayOf(2, 0))
-        white.add(intArrayOf(7, 0))
-        white.add(intArrayOf(1, 1))
-        white.add(intArrayOf(0, 4))
-        white.add(intArrayOf(5, 6))
-        white.add(intArrayOf(7, 6))
-        white.add(intArrayOf(6, 2))
-
-        val black = ArrayList<IntArray>()
-        black.add(intArrayOf(1, 0))
-        black.add(intArrayOf(0, 1))
-        black.add(intArrayOf(2, 1))
-        black.add(intArrayOf(3, 1))
-        black.add(intArrayOf(4, 1))
-        black.add(intArrayOf(5, 1))
-        black.add(intArrayOf(6, 1))
-        black.add(intArrayOf(0, 2))
-        black.add(intArrayOf(3, 2))
-        black.add(intArrayOf(4, 2))
-        black.add(intArrayOf(5, 2))
-        black.add(intArrayOf(0, 3))
-        black.add(intArrayOf(4, 3))
-        black.add(intArrayOf(1, 6))
-        black.add(intArrayOf(4, 6))
-
-        game.setNewPosition(Position(white, black))
+        game = Game(boardSize = 8, repository = dummyRepo)
+        game.setNewPosition(0)
 
         validWhiteMoves = ArrayList()
         validWhiteMoves.add(intArrayOf(0, 0))

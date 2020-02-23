@@ -1,9 +1,9 @@
 package algie.parvin.othello.presenter
 
 import algie.parvin.othello.PresenterInterface
-import algie.parvin.othello.model.Game
-import algie.parvin.othello.model.Position
-import algie.parvin.othello.model.WHITE
+import algie.parvin.othello.model.*
+import algie.parvin.othello.model.db.PuzzleRepository
+import android.app.Application
 
 
 interface ViewInterface {
@@ -13,10 +13,10 @@ interface ViewInterface {
 }
 
 
-class Presenter(activity: ViewInterface) : PresenterInterface {
+class Presenter(activity: ViewInterface, app: Application) : PresenterInterface {
 
     private var view: ViewInterface = activity
-    private val game: Game = Game()
+    private val game: Game = Game(repository = PuzzleRepository(app))
 
     override fun getBoardSize() : Int {
         return game.boardSize
@@ -48,19 +48,5 @@ class Presenter(activity: ViewInterface) : PresenterInterface {
 
     override fun getBlack(): List<Int> {
         return game.blackChips().map { it[0] * game.boardSize + it[1] }
-    }
-
-    init {
-
-        val black = ArrayList<IntArray>()
-        black.add(intArrayOf(3, 3))
-        black.add(intArrayOf(4, 4))
-
-        val white = ArrayList<IntArray>()
-        white.add(intArrayOf(4, 3))
-        white.add(intArrayOf(3, 4))
-
-        game.setNewPosition(Position(white, black))
-        game.setMoveBlack()
     }
 }
