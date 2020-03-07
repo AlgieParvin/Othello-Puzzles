@@ -3,6 +3,7 @@ package algie.parvin.othello.model.db
 import algie.parvin.othello.model.BLACK
 import algie.parvin.othello.model.WHITE
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity
@@ -19,4 +20,7 @@ class Puzzle(
         whiteChips.forEach { position[it[0]][it[1]] = WHITE }
         return position
     }
+
+    @Ignore
+    lateinit var position: Array<CharArray>
 }

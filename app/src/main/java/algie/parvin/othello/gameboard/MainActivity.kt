@@ -1,7 +1,6 @@
-package algie.parvin.othello
+package algie.parvin.othello.gameboard
 
-import algie.parvin.othello.presenter.Presenter
-import algie.parvin.othello.presenter.ViewInterface
+import algie.parvin.othello.R
 import android.graphics.drawable.AnimatedVectorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,22 +8,12 @@ import android.view.View
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.GridLayout
-import androidx.core.view.setPadding
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 
-interface PresenterInterface {
-    fun getBoardSize(): Int
-    fun handleMove(square: Int)
-    fun getWhite(): List<Int>
-    fun getBlack(): List<Int>
+class MainActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
 
-}
-
-
-class MainActivity : AppCompatActivity(), ViewInterface {
-
-    private lateinit var presenter: PresenterInterface
+    private lateinit var presenter: GameBoardContract.PresenterInterface
     private var animateBoard = true
 
     private fun initializedSquaresOnGrid() {
@@ -108,9 +97,9 @@ class MainActivity : AppCompatActivity(), ViewInterface {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         if (animateBoard) {
-            animateBoardCreation()
-            setChipsOnBoard(presenter.getWhite(), presenter.getBlack())
+            presenter.loadPuzzles()
             animateBoard = false
+            animateBoardCreation()
         }
         super.onWindowFocusChanged(hasFocus)
     }

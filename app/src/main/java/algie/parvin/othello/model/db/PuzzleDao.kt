@@ -1,11 +1,12 @@
 package algie.parvin.othello.model.db
 
 import androidx.room.*
+import io.reactivex.Flowable
 
 @Dao
 interface PuzzleDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(puzzle: Puzzle)
 
     @Delete
@@ -18,5 +19,5 @@ interface PuzzleDao {
     fun deleteAllPuzzles()
 
     @Query("SELECT * FROM puzzle")
-    fun getAllPuzzles(): List<Puzzle>
+    fun getAllPuzzles(): Flowable<List<Puzzle>>
 }

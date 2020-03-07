@@ -4,6 +4,7 @@ import algie.parvin.othello.model.DBRepository
 import algie.parvin.othello.model.Game
 import algie.parvin.othello.model.Position
 import algie.parvin.othello.model.db.Puzzle
+import io.reactivex.Flowable
 import org.junit.Assert
 import org.junit.Test
 import java.util.logging.Logger
@@ -16,7 +17,7 @@ class ModelGameValidMovesUnitTest {
     object dummyRepo : DBRepository {
         override fun updatePuzzle(puzzle: Puzzle) { }
 
-        override fun getAllPuzzles(): List<Puzzle> {
+        override fun getAllPuzzles(): Flowable<List<Puzzle>> {
             val white = ArrayList<IntArray>()
             white.add(intArrayOf(2, 0))
             white.add(intArrayOf(7, 0))
@@ -43,7 +44,7 @@ class ModelGameValidMovesUnitTest {
             black.add(intArrayOf(1, 6))
             black.add(intArrayOf(4, 6))
 
-            return listOf(Puzzle(1, 8, black, white, false))
+            return Flowable.just(listOf(Puzzle(1, 8, black, white, false)))
         }
     }
 
@@ -56,7 +57,9 @@ class ModelGameValidMovesUnitTest {
 
     init {
         game = Game(boardSize = 8, repository = dummyRepo)
-        game.setNewPosition(0)
+        game.puzzleObservable.subscribe {
+            game.setNewPosition(0)
+        }
 
         validWhiteMoves = ArrayList()
         validWhiteMoves.add(intArrayOf(0, 0))
