@@ -4,6 +4,7 @@ import algie.parvin.othello.R
 import android.graphics.drawable.AnimatedVectorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -11,10 +12,11 @@ import android.widget.GridLayout
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 
-class MainActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
+class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
 
     private lateinit var presenter: GameBoardContract.PresenterInterface
     private var animateBoard = true
+    private var freezeBoard = false
 
     private fun initializedSquaresOnGrid() {
         val boardSize = presenter.getBoardSize()
@@ -36,11 +38,16 @@ class MainActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
         }
     }
 
-    override fun setChipsOnBoard(white: List<Int>, black: List<Int>) {
+    override fun setChipsOnBoard(
+        white: List<Int>,
+        black: List<Int>,
+        freezeBoard: Boolean
+    ) {
         black.map {
             (board.getChildAt(it) as ImageView).setImageResource(R.drawable.black_to_white_avd) }
         white.map {
             (board.getChildAt(it) as ImageView).setImageResource(R.drawable.white_to_black_avd) }
+        this.freezeBoard = freezeBoard
     }
 
     private fun removeActionAndStatusBars() {
@@ -50,7 +57,11 @@ class MainActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
 
     private fun attachListenersToSquares() {
         for (i in 0 until board.childCount) {
-            board.getChildAt(i).setOnClickListener { presenter.handleMove(i)}
+            board.getChildAt(i).setOnClickListener {
+                if (!freezeBoard) {
+                    presenter.handlePlayerMove(i)
+                }
+            }
         }
     }
 
@@ -82,12 +93,22 @@ class MainActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
 
     override fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean) {
         chipIndices.map { i -> reverseChip(i, reverseToWhite) }
+        if (reverseToWhite) {
+            Handler().postDelayed({
+                presenter.receiveOpponentMove()
+                freezeBoard = true
+            }, 800)
+        } else {
+            Handler().postDelayed({
+                freezeBoard = false
+            }, 750)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        presenter = Presenter(this, application)
+        presenter = GameBoardPresenter(this, application)
 
         removeActionAndStatusBars()
         initializedSquaresOnGrid()

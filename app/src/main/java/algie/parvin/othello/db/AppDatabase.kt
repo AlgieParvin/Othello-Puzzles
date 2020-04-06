@@ -1,4 +1,4 @@
-package algie.parvin.othello.model.db
+package algie.parvin.othello.db
 
 import android.content.Context
 import androidx.room.Database
@@ -28,9 +28,11 @@ abstract class AppDatabase : RoomDatabase() {
             val puzzle = Puzzle(
                 1,
                 8,
-                listOf(intArrayOf(3, 1), intArrayOf(2, 2)),
-                listOf(intArrayOf(1, 2), intArrayOf(2, 1)),
-                false)
+                listOf(intArrayOf(4, 2), intArrayOf(1, 3), intArrayOf(2, 4), intArrayOf(4, 4)),
+                listOf(intArrayOf(5, 3), intArrayOf(3, 5), intArrayOf(5, 7)),
+                false,
+                "(31-62(71-46)(02-20)(64-46))(02-62(71-64))"
+            )
             Completable.fromAction {db.puzzleDao().insert(puzzle) }
                 .subscribeOn(Schedulers.io())
                 .subscribe()

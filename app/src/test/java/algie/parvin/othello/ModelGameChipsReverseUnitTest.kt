@@ -1,7 +1,10 @@
 package algie.parvin.othello
 
-import algie.parvin.othello.model.*
-import algie.parvin.othello.model.db.Puzzle
+import algie.parvin.othello.db.Puzzle
+import algie.parvin.othello.model.BLACK
+import algie.parvin.othello.model.DBRepository
+import algie.parvin.othello.model.Game
+import algie.parvin.othello.model.WHITE
 import io.reactivex.Flowable
 import org.junit.Test
 import org.junit.Assert.*
@@ -37,14 +40,15 @@ class ModelGameChipsReverseUnitTest {
         black.map { array -> board[array[0]][array[1]] = move }
         board[rowMove][columnMove] = move
 
-        val game = Game(boardSize = puzzleList[0].boardSize, repository = repo)
+        val game =
+            Game(boardSize = puzzleList[0].boardSize, repository = repo)
         if (move == BLACK) {
             game.setMoveBlack()
         } else {
             game.setMoveWhite()
         }
         game.puzzleObservable.subscribe {
-            game.makeMove(rowMove, columnMove)
+            game.makePlayerMove(rowMove, columnMove)
             assertEqualChips(game.puzzle.position, board)
         }
     }
@@ -179,7 +183,7 @@ class ModelGameChipsReverseUnitTest {
         val game = Game(boardSize = boardSize, repository = repo)
         game.puzzleObservable.subscribe {
             game.setMoveWhite()
-            game.makeMove(5, 5)
+            game.makePlayerMove(5, 5)
             assertEqualChips(game.puzzle.position, board)
         }
     }

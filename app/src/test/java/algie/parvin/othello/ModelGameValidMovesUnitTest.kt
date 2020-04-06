@@ -3,7 +3,7 @@ package algie.parvin.othello
 import algie.parvin.othello.model.DBRepository
 import algie.parvin.othello.model.Game
 import algie.parvin.othello.model.Position
-import algie.parvin.othello.model.db.Puzzle
+import algie.parvin.othello.db.Puzzle
 import io.reactivex.Flowable
 import org.junit.Assert
 import org.junit.Test

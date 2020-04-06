@@ -1,4 +1,4 @@
-package algie.parvin.othello.model.db
+package algie.parvin.othello.db
 
 import algie.parvin.othello.model.BLACK
 import algie.parvin.othello.model.WHITE
@@ -12,7 +12,8 @@ class Puzzle(
     var boardSize: Int,
     var blackChips: List<IntArray>,
     var whiteChips: List<IntArray>,
-    var solved: Boolean) {
+    var solved: Boolean,
+    var variants: String) {
 
     fun getInitialPosition(): Array<CharArray> {
         val position = Array(boardSize) { CharArray(boardSize) }

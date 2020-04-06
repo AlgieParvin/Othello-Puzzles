@@ -1,4 +1,4 @@
-package algie.parvin.othello.model.db
+package algie.parvin.othello.db
 
 import algie.parvin.othello.model.DBRepository
 import android.app.Application

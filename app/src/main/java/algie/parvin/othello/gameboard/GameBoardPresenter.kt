@@ -1,13 +1,13 @@
 package algie.parvin.othello.gameboard
 
 import algie.parvin.othello.model.*
-import algie.parvin.othello.model.db.PuzzleRepository
+import algie.parvin.othello.db.PuzzleRepository
 import android.app.Application
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 
-class Presenter(activity: GameBoardContract.ViewInterface, app: Application) :
+class GameBoardPresenter(activity: GameBoardContract.ViewInterface, app: Application) :
     GameBoardContract.PresenterInterface {
 
     private var view: GameBoardContract.ViewInterface = activity
@@ -17,7 +17,12 @@ class Presenter(activity: GameBoardContract.ViewInterface, app: Application) :
         return game.boardSize
     }
 
-    override fun handleMove(square: Int) {
+    override fun receiveOpponentMove() {
+        val position = game.getOpponentMove()
+        handlePlayerMove(position[0] * game.boardSize + position[1])
+    }
+
+    override fun handlePlayerMove(square: Int) {
         val row = square / game.boardSize
         val column = square % game.boardSize
         val isWhiteMove = game.turn == WHITE
@@ -25,13 +30,13 @@ class Presenter(activity: GameBoardContract.ViewInterface, app: Application) :
         if (!game.isSquareFree(row, column) or !game.isMoveValid(row, column)) {
             return
         }
-        val chips = game.makeMove(row, column)
+        val chips = game.makePlayerMove(row, column)
         val indices = chips.map { it[0] * game.boardSize + it[1] }
 
         if (isWhiteMove) {
-            view.setChipsOnBoard(listOf(square), listOf())
+            view.setChipsOnBoard(listOf(square), listOf(), true)
         } else {
-            view.setChipsOnBoard(listOf(), listOf(square))
+            view.setChipsOnBoard(listOf(), listOf(square), false)
         }
 
         view.reverseChips(indices, isWhiteMove)
@@ -54,7 +59,7 @@ class Presenter(activity: GameBoardContract.ViewInterface, app: Application) :
                         }
                     }
                 }
-                view.setChipsOnBoard(white, black)
+                view.setChipsOnBoard(white, black, false)
             }
     }
 }
