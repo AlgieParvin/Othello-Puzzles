@@ -1,17 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
-
-    <item android:top="@dimen/chip_padding"
-        android:bottom="@dimen/chip_padding"
-        android:left="@dimen/chip_padding"
-        android:right="@dimen/chip_padding">
-        <shape android:shape="oval" >
-            <stroke
-                android:width="@dimen/chip_stroke"
-                android:color="@color/white"/>
-            <solid android:color="@color/white"/>
-        </shape>
-    </item>
-</layer-list>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="381dp"
+            android:height="381dp"
+            android:viewportWidth="381"
+            android:viewportHeight="381">
+            <path
+                android:name="path_2"
+                android:pathData="M 190.5 49.75 C 152.92 49.75 116.841 64.589 90.268 90.975 C 63.695 117.36 48.75 153.185 48.75 190.5 C 48.75 227.815 63.695 263.64 90.268 290.025 C 116.841 316.411 152.92 331.25 190.5 331.25 C 228.08 331.25 264.159 316.411 290.732 290.025 C 317.305 263.64 332.25 227.815 332.25 190.5 C 332.25 153.185 317.305 117.36 290.732 90.975 C 264.159 64.589 228.08 49.75 190.5 49.75 Z"
+                android:strokeColor="#FAEEE7"
+                android:fillColor="#FAEEE7"
+                android:strokeWidth="16"
+                android:strokeMiterLimit="10"/>
+        </vector>
+    </aapt:attr>
+</animated-vector>

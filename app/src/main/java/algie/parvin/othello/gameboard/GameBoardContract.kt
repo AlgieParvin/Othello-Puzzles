@@ -5,7 +5,7 @@ class GameBoardContract {
     interface PresenterInterface {
         fun getBoardSize(): Int
         fun handlePlayerMove(square: Int)
-        fun loadPuzzles()
+        fun loadPuzzle(id: Int)
         fun receiveOpponentMove()
     }
 

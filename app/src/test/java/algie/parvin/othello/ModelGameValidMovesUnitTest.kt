@@ -15,9 +15,10 @@ class ModelGameValidMovesUnitTest {
     private val logger = Logger.getLogger(ModelGameValidMovesUnitTest::class.java.name)
 
     object dummyRepo : DBRepository {
-        override fun updatePuzzle(puzzle: Puzzle) { }
 
-        override fun getAllPuzzles(): Flowable<List<Puzzle>> {
+        val puzzle: Puzzle
+
+        init {
             val white = ArrayList<IntArray>()
             white.add(intArrayOf(2, 0))
             white.add(intArrayOf(7, 0))
@@ -44,7 +45,17 @@ class ModelGameValidMovesUnitTest {
             black.add(intArrayOf(1, 6))
             black.add(intArrayOf(4, 6))
 
-            return Flowable.just(listOf(Puzzle(1, 8, black, white, false)))
+            puzzle = Puzzle(1, 8, black, white, false, "")
+        }
+
+        override fun updatePuzzle(puzzle: Puzzle) { }
+
+        override fun getPuzzle(id: Int): Flowable<Puzzle> {
+            return Flowable.just(puzzle)
+        }
+
+        override fun getAllPuzzles(): Flowable<List<Puzzle>> {
+            return Flowable.just(listOf(puzzle))
         }
     }
 
@@ -57,9 +68,7 @@ class ModelGameValidMovesUnitTest {
 
     init {
         game = Game(boardSize = 8, repository = dummyRepo)
-        game.puzzleObservable.subscribe {
-            game.setNewPosition(0)
-        }
+        game.setNewPosition(dummyRepo.puzzle)
 
         validWhiteMoves = ArrayList()
         validWhiteMoves.add(intArrayOf(0, 0))

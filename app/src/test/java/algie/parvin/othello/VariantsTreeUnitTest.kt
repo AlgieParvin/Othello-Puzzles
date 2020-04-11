@@ -7,7 +7,7 @@ import org.junit.Test
 
 class VariantsTreeUnitTest {
 
-    private val variants = "(31-62(71-46)(02-20)(64-46))(02-62(71-64))"
+    private val variants = "(3,1-6,2(7,1-4,6)(0,2-2,0)(6,4-4,6))(0,2-6,2(7,1-6,4))"
 
     @Test
     fun buildTreeCalls_treeBuildWithoutErrors() {

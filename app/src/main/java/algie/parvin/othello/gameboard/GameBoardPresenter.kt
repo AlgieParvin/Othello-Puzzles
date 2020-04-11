@@ -7,10 +7,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 
-class GameBoardPresenter(activity: GameBoardContract.ViewInterface, app: Application) :
+class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: Application) :
     GameBoardContract.PresenterInterface {
 
-    private var view: GameBoardContract.ViewInterface = activity
+    private var view: GameBoardContract.ViewInterface = viewFragment
     private val game: Game = Game(repository = PuzzleRepository(app))
 
     override fun getBoardSize() : Int {
@@ -19,13 +19,15 @@ class GameBoardPresenter(activity: GameBoardContract.ViewInterface, app: Applica
 
     override fun receiveOpponentMove() {
         val position = game.getOpponentMove()
-        handlePlayerMove(position[0] * game.boardSize + position[1])
+        if (position.isNotEmpty() && game.isMoveValid(position[0], position[1])) {
+            handlePlayerMove(position[0] * game.boardSize + position[1])
+        }
     }
 
     override fun handlePlayerMove(square: Int) {
         val row = square / game.boardSize
         val column = square % game.boardSize
-        val isWhiteMove = game.turn == WHITE
+        val isWhiteMove = game.turn == Chip.WHITE
 
         if (!game.isSquareFree(row, column) or !game.isMoveValid(row, column)) {
             return
@@ -42,19 +44,20 @@ class GameBoardPresenter(activity: GameBoardContract.ViewInterface, app: Applica
         view.reverseChips(indices, isWhiteMove)
     }
 
-    override fun loadPuzzles() {
-        game.puzzleObservable
+    override fun loadPuzzle(id: Int) {
+        val subscribe = game.repository.getPuzzle(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
+                game.setNewPosition(it)
                 val white = ArrayList<Int>()
                 val black = ArrayList<Int>()
                 for (i in 0 until game.boardSize) {
                     for (j in 0 until game.boardSize) {
-                        if (game.puzzle.position[i][j] == WHITE) {
+                        if (game.puzzle.position[i][j] == Chip.WHITE) {
                             white.add(i * game.boardSize + j)
                         }
-                        if (game.puzzle.position[i][j] == BLACK) {
+                        if (game.puzzle.position[i][j] == Chip.BLACK) {
                             black.add(i * game.boardSize + j)
                         }
                     }

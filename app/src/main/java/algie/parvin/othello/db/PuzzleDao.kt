@@ -20,4 +20,7 @@ interface PuzzleDao {
 
     @Query("SELECT * FROM puzzle")
     fun getAllPuzzles(): Flowable<List<Puzzle>>
+
+    @Query("SELECT * FROM puzzle where id = :id")
+    fun getPuzzle(id: Int): Flowable<Puzzle>
 }

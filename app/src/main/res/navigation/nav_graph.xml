@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/puzzleListFragment">
+
+    <fragment
+        android:id="@+id/puzzleListFragment"
+        android:name="algie.parvin.othello.PuzzleListFragment"
+        android:label="fragment_puzzle_list"
+        tools:layout="@layout/fragment_puzzle_list" >
+        <action
+            android:id="@+id/action_puzzleListFragment_to_gameBoardFragment"
+            app:destination="@id/gameBoardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameBoardFragment"
+        android:name="algie.parvin.othello.gameboard.GameBoardFragment"
+        android:label="GameBoardFragment"
+        tools:layout="@layout/fragment_game_board"/>
+</navigation>

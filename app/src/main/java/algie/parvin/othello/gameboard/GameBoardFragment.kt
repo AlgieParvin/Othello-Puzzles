@@ -1,21 +1,24 @@
 package algie.parvin.othello.gameboard
 
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+
 import algie.parvin.othello.R
 import android.graphics.drawable.AnimatedVectorDrawable
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.os.Handler
-import android.view.View
-import android.widget.ImageView
-import kotlinx.android.synthetic.main.activity_gameboard.*
 import android.widget.GridLayout
+import android.widget.ImageView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import kotlinx.android.synthetic.main.activity_gameboard.*
 
 
-class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
+class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
 
     private lateinit var presenter: GameBoardContract.PresenterInterface
-    private var animateBoard = true
     private var freezeBoard = false
 
     private fun initializedSquaresOnGrid() {
@@ -24,7 +27,7 @@ class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
         board.rowCount = boardSize
 
         for (i in 0 until boardSize * boardSize) {
-            var view = ImageView(this)
+            val view = ImageView(context)
             board.addView(view, i)
             val param = GridLayout.LayoutParams(
                 GridLayout.spec(
@@ -44,15 +47,19 @@ class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
         freezeBoard: Boolean
     ) {
         black.map {
-            (board.getChildAt(it) as ImageView).setImageResource(R.drawable.black_to_white_avd) }
+            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.black_chip)
+            (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
+        }
         white.map {
-            (board.getChildAt(it) as ImageView).setImageResource(R.drawable.white_to_black_avd) }
+            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.white_chip)
+            (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
+        }
         this.freezeBoard = freezeBoard
     }
 
     private fun removeActionAndStatusBars() {
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        actionBar?.hide()
+        activity!!.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        activity!!.actionBar?.hide()
     }
 
     private fun attachListenersToSquares() {
@@ -67,9 +74,11 @@ class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
 
     private fun reverseChip(index: Int, changeToWhite: Boolean) {
         if (changeToWhite) {
-            (board.getChildAt(index) as ImageView).setImageResource(R.drawable.black_to_white_avd)
+            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.black_to_white_avd)
+            (board.getChildAt(index) as ImageView).setImageDrawable(drawable)
         } else {
-            (board.getChildAt(index) as ImageView).setImageResource(R.drawable.white_to_black_avd)
+            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.white_to_black_avd)
+            (board.getChildAt(index) as ImageView).setImageDrawable(drawable)
         }
 
         val drawable = (board.getChildAt(index) as ImageView).drawable
@@ -83,10 +92,7 @@ class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
 
     override fun animateBoardCreation() {
         val drawable = board.background
-        if (drawable is AnimatedVectorDrawableCompat) {
-            drawable.start()
-        }
-        else if (drawable is AnimatedVectorDrawable) {
+        if (drawable is AnimatedVectorDrawable) {
             drawable.start()
         }
     }
@@ -105,23 +111,23 @@ class GameBoardActivity : AppCompatActivity(), GameBoardContract.ViewInterface {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_gameboard)
-        presenter = GameBoardPresenter(this, application)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_game_board, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter = GameBoardPresenter(this, activity!!.application)
 
         removeActionAndStatusBars()
         initializedSquaresOnGrid()
-
         attachListenersToSquares()
-    }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        if (animateBoard) {
-            presenter.loadPuzzle(1)
-            animateBoard = false
-            animateBoardCreation()
-        }
-        super.onWindowFocusChanged(hasFocus)
+        val id = arguments!!.getInt("ID", 1)
+        presenter.loadPuzzle(id)
+        animateBoardCreation()
     }
 }

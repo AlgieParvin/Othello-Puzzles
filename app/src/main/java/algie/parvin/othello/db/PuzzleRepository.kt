@@ -28,6 +28,10 @@ class PuzzleRepository(app: Application) : DBRepository {
         return puzzles
     }
 
+    override fun getPuzzle(id: Int): Flowable<Puzzle> {
+        return dao.getPuzzle(id)
+    }
+
     override fun updatePuzzle(puzzle: Puzzle) {
         Completable.fromAction { dao.insert(puzzle) }
             .subscribeOn(Schedulers.io())
