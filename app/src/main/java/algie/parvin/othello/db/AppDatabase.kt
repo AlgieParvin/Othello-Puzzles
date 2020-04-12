@@ -97,7 +97,7 @@ abstract class AppDatabase : RoomDatabase() {
             val db = Room.databaseBuilder(context, AppDatabase::class.java, "puzzle.db")
                 .fallbackToDestructiveMigration()
                 .build()
-            initializeDatabase(db)
+//            initializeDatabase(db)
             return db
         }
     }

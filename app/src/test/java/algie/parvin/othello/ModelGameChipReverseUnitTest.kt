@@ -3,6 +3,7 @@ package algie.parvin.othello
 import algie.parvin.othello.db.Puzzle
 import algie.parvin.othello.model.*
 import io.reactivex.Flowable
+import io.reactivex.Single
 import org.junit.Test
 import org.junit.Assert.*
 
@@ -11,15 +12,16 @@ class ModelGameChipReverseUnitTest {
 
     private fun mockRepository(puzzleList: List<Puzzle>) : DBRepository {
        return object : DBRepository {
-           override fun getPuzzle(id: Int): Flowable<Puzzle> {
-               return Flowable.just(puzzleList[0])
+           override fun getPuzzle(id: Int): Single<Puzzle> {
+               return Single.just(puzzleList[0])
+           }
+
+           override fun getDefaultPuzzle(): Single<Puzzle> {
+               return Single.just(puzzleList[0])
            }
 
            override fun updatePuzzle(puzzle: Puzzle) { }
 
-            override fun getAllPuzzles(): Flowable<List<Puzzle>> {
-                return Flowable.just(puzzleList)
-            }
         }
     }
 
@@ -42,7 +44,7 @@ class ModelGameChipReverseUnitTest {
 
         val game = Game(boardSize = puzzleList[0].boardSize, repository = repo)
 
-        game.setNewPosition(repo.getPuzzle(0).blockingFirst())
+        game.setNewPosition(repo.getPuzzle(0).blockingGet())
         if (move == Chip.BLACK) game.setMoveBlack() else game.setMoveWhite()
         game.makePlayerMove(rowMove, columnMove)
         assertEqualChips(game.puzzle.position, board)

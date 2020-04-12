@@ -6,6 +6,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
@@ -15,6 +16,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
     private var view: GameBoardContract.ViewInterface = viewFragment
     private val game: Game = Game(repository = PuzzleRepository(app))
     private val movesObservable = MutableLiveData<Int>()
+    private lateinit var puzzleSubscriber: Disposable
 
     override fun getMovesObservable(): LiveData<Int> {
         return movesObservable
@@ -52,6 +54,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
         view.reverseChips(indices, isWhiteMove)
 
         if (game.hasPlayerWon()) {
+            game.savePuzzleAsSolved()
             view.onPlayerWin()
         }
         if (game.hasPlayerLost()) {
@@ -60,11 +63,11 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
     }
 
     override fun loadPuzzle(id: Int) {
-        val subscribe = game.repository.getPuzzle(id)
+        puzzleSubscriber = game.repository.getPuzzle(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                game.setNewPosition(it)
+            .subscribe { puzzle ->
+                game.setNewPosition(puzzle)
                 val white = ArrayList<Int>()
                 val black = ArrayList<Int>()
                 for (i in 0 until game.boardSize) {
@@ -77,7 +80,30 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
                         }
                     }
                 }
-                view.setChipsOnBoard(white, black, false)
+                view.showNewPuzzle(white, black)
+                movesObservable.postValue(game.puzzle.movesCounter)
+            }
+    }
+
+    override fun loadDefaultPuzzle() {
+        puzzleSubscriber = game.repository.getDefaultPuzzle()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { puzzle ->
+                game.setNewPosition(puzzle)
+                val white = ArrayList<Int>()
+                val black = ArrayList<Int>()
+                for (i in 0 until game.boardSize) {
+                    for (j in 0 until game.boardSize) {
+                        if (game.puzzle.position[i][j] == Chip.WHITE) {
+                            white.add(i * game.boardSize + j)
+                        }
+                        if (game.puzzle.position[i][j] == Chip.BLACK) {
+                            black.add(i * game.boardSize + j)
+                        }
+                    }
+                }
+                view.showNewPuzzle(white, black)
                 movesObservable.postValue(game.puzzle.movesCounter)
             }
     }

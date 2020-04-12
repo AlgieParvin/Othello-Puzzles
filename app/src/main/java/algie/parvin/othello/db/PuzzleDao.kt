@@ -1,7 +1,9 @@
 package algie.parvin.othello.db
 
 import androidx.room.*
+import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface PuzzleDao {
@@ -19,8 +21,11 @@ interface PuzzleDao {
     fun deleteAllPuzzles()
 
     @Query("SELECT * FROM puzzle")
-    fun getAllPuzzles(): Flowable<List<Puzzle>>
+    fun getAllPuzzles(): Single<List<Puzzle>>
 
     @Query("SELECT * FROM puzzle where id = :id")
-    fun getPuzzle(id: Int): Flowable<Puzzle>
+    fun getPuzzle(id: Int): Single<Puzzle>
+
+    @Query("SELECT * FROM puzzle WHERE id=(SELECT MIN(id) FROM puzzle WHERE solved=0)")
+    fun getDefaultPuzzle(): Single<Puzzle>
 }

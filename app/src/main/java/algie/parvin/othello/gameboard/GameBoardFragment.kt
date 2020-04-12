@@ -92,11 +92,36 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         }
     }
 
-    override fun animateBoardCreation() {
+    private fun animateBoardCreation() {
         val drawable = board.background
         if (drawable is AnimatedVectorDrawable) {
             drawable.start()
         }
+    }
+
+    override fun showNewPuzzle(white: List<Int>, black: List<Int>) {
+        presenter.getMovesObservable().observe(viewLifecycleOwner, Observer { moves ->
+            if (moves == 0) {
+                movesCounter.text = ""
+            } else {
+                movesCounter.text = moves.toString()
+            }
+        })
+
+        animateBoardCreation()
+        black.map {
+            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.white_to_black_avd)
+            (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
+            drawable!!.start()
+        }
+        white.map {
+            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.black_to_white_avd)
+            (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
+            drawable!!.start()
+        }
+        Handler().postDelayed({
+            setChipsOnBoard(white, black, false)
+        }, 800)
     }
 
     override fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean) {
@@ -140,16 +165,15 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         initializedSquaresOnGrid()
         attachListenersToSquares()
 
-        val id = arguments!!.getInt("ID", 1)
-        presenter.loadPuzzle(id)
-        animateBoardCreation()
-
-        presenter.getMovesObservable().observe(viewLifecycleOwner, Observer { moves ->
-            if (moves == 0) {
-                movesCounter.text = ""
+        if (arguments == null) {
+            presenter.loadDefaultPuzzle()
+        } else {
+            val id = arguments!!.getInt("ID", -1)
+            if (id == -1) {
+                presenter.loadDefaultPuzzle()
             } else {
-                movesCounter.text = moves.toString()
+                presenter.loadPuzzle(id)
             }
-        })
+        }
     }
 }

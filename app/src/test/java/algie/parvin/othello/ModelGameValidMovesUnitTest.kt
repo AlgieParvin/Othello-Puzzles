@@ -5,6 +5,7 @@ import algie.parvin.othello.model.Game
 import algie.parvin.othello.model.Position
 import algie.parvin.othello.db.Puzzle
 import io.reactivex.Flowable
+import io.reactivex.Single
 import org.junit.Assert
 import org.junit.Test
 import java.util.logging.Logger
@@ -50,12 +51,12 @@ class ModelGameValidMovesUnitTest {
 
         override fun updatePuzzle(puzzle: Puzzle) { }
 
-        override fun getPuzzle(id: Int): Flowable<Puzzle> {
-            return Flowable.just(puzzle)
+        override fun getPuzzle(id: Int): Single<Puzzle> {
+            return Single.just(puzzle)
         }
 
-        override fun getAllPuzzles(): Flowable<List<Puzzle>> {
-            return Flowable.just(listOf(puzzle))
+        override fun getDefaultPuzzle(): Single<Puzzle> {
+            return Single.just(puzzle)
         }
     }
 

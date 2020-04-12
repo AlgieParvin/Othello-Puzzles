@@ -2,6 +2,7 @@ package algie.parvin.othello.model
 
 import algie.parvin.othello.db.Puzzle
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 
 enum class Chip {
@@ -11,8 +12,8 @@ enum class Chip {
 
 interface DBRepository {
     fun updatePuzzle(puzzle: Puzzle)
-    fun getAllPuzzles() : Flowable<List<Puzzle>>
-    fun getPuzzle(id: Int): Flowable<Puzzle>
+    fun getPuzzle(id: Int): Single<Puzzle>
+    fun getDefaultPuzzle(): Single<Puzzle>
 }
 
 
@@ -92,5 +93,10 @@ class Game(val boardSize: Int = 8, val repository: DBRepository) {
             return !hasPlayerWon()
         }
         return false
+    }
+
+    fun savePuzzleAsSolved() {
+        puzzle.solved = true
+        repository.updatePuzzle(puzzle)
     }
 }
