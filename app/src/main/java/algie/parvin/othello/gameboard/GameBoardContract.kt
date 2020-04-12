@@ -1,5 +1,7 @@
 package algie.parvin.othello.gameboard
 
+import androidx.lifecycle.LiveData
+
 class GameBoardContract {
 
     interface PresenterInterface {
@@ -7,6 +9,7 @@ class GameBoardContract {
         fun handlePlayerMove(square: Int)
         fun loadPuzzle(id: Int)
         fun receiveOpponentMove()
+        fun getMovesObservable(): LiveData<Int>
     }
 
     interface ViewInterface {
@@ -17,5 +20,8 @@ class GameBoardContract {
         )
         fun animateBoardCreation()
         fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean)
+        fun onPlayerWin()
+        fun onPlayerLose()
+        fun setMovesCounter(moves: Int)
     }
 }

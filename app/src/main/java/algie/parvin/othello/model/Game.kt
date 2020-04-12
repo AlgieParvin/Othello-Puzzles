@@ -75,4 +75,22 @@ class Game(val boardSize: Int = 8, val repository: DBRepository) {
         puzzle.position = puzzle.getInitialPosition().map { it.clone() }.toTypedArray()
         variantsTree = VariantsTree().apply { buildFromString(puzzle.variants) }
     }
+
+    fun hasPlayerWon(): Boolean {
+        if (turn == Chip.BLACK) {
+            puzzle.position.map { row -> row.map { if (it == Chip.BLACK) return false } }
+            return true
+        }
+        return false
+    }
+
+    fun hasPlayerLost(): Boolean {
+        if (turn == Chip.BLACK) {
+            if (puzzle.movesLeft != 0) {
+                return gameLogic.getAllValidOpponentMoves(puzzle).isEmpty()
+            }
+            return !hasPlayerWon()
+        }
+        return false
+    }
 }

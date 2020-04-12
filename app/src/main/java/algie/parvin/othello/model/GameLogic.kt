@@ -3,7 +3,7 @@ package algie.parvin.othello.model
 import algie.parvin.othello.db.Puzzle
 import kotlin.math.min
 
-data class MoveOption(val move: IntArray, val playerWins: Boolean)
+class MoveOption(val move: IntArray, val playerWins: Boolean)
 
 class GameLogic {
 
@@ -38,7 +38,7 @@ class GameLogic {
         return getAllValidMoves(Chip.WHITE, puzzle)
     }
 
-    private fun getAllValidOpponentMoves(puzzle: Puzzle): List<IntArray> {
+    fun getAllValidOpponentMoves(puzzle: Puzzle): List<IntArray> {
         return getAllValidMoves(Chip.BLACK, puzzle)
     }
 
@@ -67,7 +67,7 @@ class GameLogic {
             return MoveOption(move, false)
         }
         return MoveOption(
-            getAllValidOpponentMoves(puzzle).getOrElse(0) { intArrayOf(0, 0) },
+            getAllValidOpponentMoves(puzzle).shuffled().getOrElse(0) { intArrayOf(0, 0) },
             true)
     }
 
@@ -92,7 +92,7 @@ class GameLogic {
                 }
             }
             return MoveOption(
-                getAllValidOpponentMoves(puzzle).getOrElse(0) { intArrayOf(0, 0) },
+                getAllValidOpponentMoves(puzzle).shuffled().getOrElse(0) { intArrayOf(0, 0) },
                 true)
         }
     }

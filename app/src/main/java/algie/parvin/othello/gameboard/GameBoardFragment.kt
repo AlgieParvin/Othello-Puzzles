@@ -12,8 +12,10 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Handler
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import kotlinx.android.synthetic.main.activity_gameboard.*
+import kotlinx.android.synthetic.main.fragment_game_board.*
 
 
 class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
@@ -111,6 +113,18 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         }
     }
 
+    override fun setMovesCounter(moves: Int) {
+        movesCounter.text = moves.toString()
+    }
+
+    override fun onPlayerWin() {
+        Toast.makeText(activity, R.string.player_wins, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPlayerLose() {
+        Toast.makeText(activity, R.string.player_lost, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -129,5 +143,13 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         val id = arguments!!.getInt("ID", 1)
         presenter.loadPuzzle(id)
         animateBoardCreation()
+
+        presenter.getMovesObservable().observe(viewLifecycleOwner, Observer { moves ->
+            if (moves == 0) {
+                movesCounter.text = ""
+            } else {
+                movesCounter.text = moves.toString()
+            }
+        })
     }
 }

@@ -3,6 +3,8 @@ package algie.parvin.othello.gameboard
 import algie.parvin.othello.model.*
 import algie.parvin.othello.db.PuzzleRepository
 import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -12,6 +14,11 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
 
     private var view: GameBoardContract.ViewInterface = viewFragment
     private val game: Game = Game(repository = PuzzleRepository(app))
+    private val movesObservable = MutableLiveData<Int>()
+
+    override fun getMovesObservable(): LiveData<Int> {
+        return movesObservable
+    }
 
     override fun getBoardSize() : Int {
         return game.boardSize
@@ -36,12 +43,20 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
         val indices = chips.map { it[0] * game.boardSize + it[1] }
 
         if (isWhiteMove) {
+            movesObservable.postValue(game.puzzle.movesLeft)
             view.setChipsOnBoard(listOf(square), listOf(), true)
         } else {
             view.setChipsOnBoard(listOf(), listOf(square), false)
         }
 
         view.reverseChips(indices, isWhiteMove)
+
+        if (game.hasPlayerWon()) {
+            view.onPlayerWin()
+        }
+        if (game.hasPlayerLost()) {
+            view.onPlayerLose()
+        }
     }
 
     override fun loadPuzzle(id: Int) {
@@ -63,6 +78,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
                     }
                 }
                 view.setChipsOnBoard(white, black, false)
+                movesObservable.postValue(game.puzzle.movesCounter)
             }
     }
 }
