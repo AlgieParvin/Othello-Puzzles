@@ -27,9 +27,9 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
     }
 
     override fun receiveOpponentMove() {
-        val position = game.getOpponentMove()
-        if (position.isNotEmpty() && game.isMoveValid(position[0], position[1])) {
-            handlePlayerMove(position[0] * game.boardSize + position[1])
+        val field = game.getOpponentMove()
+        if (game.isMoveValid(field.row, field.column)) {
+            handlePlayerMove(field.row * game.boardSize + field.column)
         }
     }
 
@@ -42,7 +42,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
             return
         }
         val chips = game.makePlayerMove(row, column)
-        val indices = chips.map { it[0] * game.boardSize + it[1] }
+        val indices = chips.map { it.row * game.boardSize + it.column }
 
         if (isWhiteMove) {
             movesObservable.postValue(game.puzzle.movesLeft)

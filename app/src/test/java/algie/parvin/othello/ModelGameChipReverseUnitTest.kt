@@ -2,7 +2,6 @@ package algie.parvin.othello
 
 import algie.parvin.othello.db.Puzzle
 import algie.parvin.othello.model.*
-import io.reactivex.Flowable
 import io.reactivex.Single
 import org.junit.Test
 import org.junit.Assert.*
@@ -35,7 +34,9 @@ class ModelGameChipReverseUnitTest {
     private fun testRealBoardIsEqualToTestBoard(
         white: List<IntArray>, black: List<IntArray>, rowMove: Int, columnMove: Int, move: Chip
     ) {
-        val puzzleList = listOf(Puzzle(1, 8, black, white, false, ""))
+        val chips: MutableList<Field> = black.map { Field(it[0], it[1], Chip.BLACK) }.toMutableList()
+        chips.addAll(white.map { Field(it[0], it[1], Chip.WHITE) })
+        val puzzleList = listOf(Puzzle(1, 8, chips, false, ""))
         val repo = mockRepository(puzzleList)
         val board = Array(puzzleList[0].boardSize) { Array(puzzleList[0].boardSize) { Chip.NONE } }
         white.map { array -> board[array[0]][array[1]] = move }
@@ -218,7 +219,10 @@ class ModelGameChipReverseUnitTest {
         board[1][5] = Chip.BLACK
         board[1][1] = Chip.BLACK
 
-        val puzzle = Puzzle(1, 8, black, white, false, "")
+        val chips: MutableList<Field> = black.map { Field(it[0], it[1], Chip.BLACK) }.toMutableList()
+        chips.addAll(white.map { Field(it[0], it[1], Chip.WHITE) })
+
+        val puzzle = Puzzle(1, 8, chips, false, "")
         val puzzleList = listOf(puzzle)
         val repo = mockRepository(puzzleList)
 

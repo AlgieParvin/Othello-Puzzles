@@ -1,6 +1,7 @@
 package algie.parvin.othello.db
 
 import algie.parvin.othello.model.Chip
+import algie.parvin.othello.model.Field
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -9,16 +10,17 @@ import androidx.room.PrimaryKey
 class Puzzle(
     @PrimaryKey var id: Int,
     var boardSize: Int,
-    var blackChips: List<IntArray>,
-    var whiteChips: List<IntArray>,
+    var chips: List<Field>,
     var solved: Boolean,
     var variants: String,
     val movesCounter: Int = 1) : Cloneable {
 
     fun getInitialPosition(): Array<Array<Chip>> {
         val position = Array(boardSize) { Array(boardSize) { Chip.NONE} }
-        blackChips.forEach { position[it[0]][it[1]] = Chip.BLACK }
-        whiteChips.forEach { position[it[0]][it[1]] = Chip.WHITE }
+        chips.filter { field -> field.chip == Chip.WHITE }
+            .forEach { position[it.row][it.column] = Chip.WHITE }
+        chips.filter { field -> field.chip == Chip.BLACK }
+            .forEach { position[it.row][it.column] = Chip.BLACK }
         return position
     }
 
@@ -29,8 +31,7 @@ class Puzzle(
         return Puzzle(
             -1,
             boardSize,
-            blackChips.map { it.copyOf() },
-            whiteChips.map { it.copyOf() },
+            chips,
             solved,
             variants,
             movesCounter

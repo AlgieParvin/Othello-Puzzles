@@ -3,7 +3,7 @@ package algie.parvin.othello.model
 import algie.parvin.othello.db.Puzzle
 import kotlin.math.min
 
-class MoveOption(val move: IntArray, val playerWins: Boolean)
+class MoveOption(val move: Field, val playerWins: Boolean)
 
 class GameLogic {
 
@@ -22,23 +22,23 @@ class GameLogic {
         return false
     }
 
-    private fun getAllValidMoves(turn: Chip, puzzle: Puzzle): List<IntArray> {
-        val validMoves = mutableListOf<IntArray>()
+    private fun getAllValidMoves(turn: Chip, puzzle: Puzzle): List<Field> {
+        val validMoves = mutableListOf<Field>()
         for (row in 0 until puzzle.boardSize) {
             for (column in 0 until puzzle.boardSize) {
                 if (isMoveValid(puzzle, turn, puzzle.boardSize, row, column)) {
-                    validMoves.add(intArrayOf(row, column))
+                    validMoves.add(Field(row, column, turn))
                 }
             }
         }
         return validMoves
     }
 
-    private fun getAllValidPlayerMoves(puzzle: Puzzle): List<IntArray> {
+    private fun getAllValidPlayerMoves(puzzle: Puzzle): List<Field> {
         return getAllValidMoves(Chip.WHITE, puzzle)
     }
 
-    fun getAllValidOpponentMoves(puzzle: Puzzle): List<IntArray> {
+    fun getAllValidOpponentMoves(puzzle: Puzzle): List<Field> {
         return getAllValidMoves(Chip.BLACK, puzzle)
     }
 
@@ -54,12 +54,12 @@ class GameLogic {
     private fun findBestFinishingMove(puzzle: Puzzle): MoveOption {
         outer@ for (move in getAllValidOpponentMoves(puzzle)) {
             val p = puzzle.clone() as Puzzle
-            p.position[move[0]][move[1]] = Chip.BLACK
-            updateChips(p, Chip.BLACK, move[0], move[1])
+            p.position[move.row][move.column] = Chip.BLACK
+            updateChips(p, Chip.BLACK, move.row, move.column)
             for (playerMove in getAllValidPlayerMoves(p)) {
                 val p1 = p.clone() as Puzzle
-                p1.position[playerMove[0]][playerMove[1]] = Chip.WHITE
-                updateChips(p1, Chip.WHITE, playerMove[0], playerMove[1])
+                p1.position[playerMove.row][playerMove.column] = Chip.WHITE
+                updateChips(p1, Chip.WHITE, playerMove.row, playerMove.column)
                 if (playerWins(p1)) {
                     continue@outer
                 }
@@ -67,8 +67,8 @@ class GameLogic {
             return MoveOption(move, false)
         }
         return MoveOption(
-            getAllValidOpponentMoves(puzzle).shuffled().getOrElse(0) { intArrayOf(0, 0) },
-            true)
+            getAllValidOpponentMoves(puzzle).shuffled()
+                .getOrElse(0) { Field(0, 0, Chip.BLACK) }, true)
     }
 
     fun findBestMove(puzzle: Puzzle): MoveOption {
@@ -77,14 +77,14 @@ class GameLogic {
         } else {
             for (move in getAllValidOpponentMoves(puzzle)) {
                 val p = puzzle.clone() as Puzzle
-                p.position[move[0]][move[1]] = Chip.BLACK
-                updateChips(p, Chip.BLACK, move[0], move[1])
+                p.position[move.row][move.column] = Chip.BLACK
+                updateChips(p, Chip.BLACK, move.row, move.column)
                 val opponentMoves = mutableListOf<MoveOption>()
                 for (playerMove in getAllValidPlayerMoves(p)) {
                     val p1 = p.clone() as Puzzle
                     p1.movesLeft--
-                    p1.position[playerMove[0]][playerMove[1]] = Chip.WHITE
-                    updateChips(p1, Chip.WHITE, playerMove[0], playerMove[1])
+                    p1.position[playerMove.row][playerMove.column] = Chip.WHITE
+                    updateChips(p1, Chip.WHITE, playerMove.row, playerMove.column)
                     opponentMoves.add(findBestMove(p1))
                 }
                 if (opponentMoves.none { !it.playerWins }) {
@@ -92,8 +92,8 @@ class GameLogic {
                 }
             }
             return MoveOption(
-                getAllValidOpponentMoves(puzzle).shuffled().getOrElse(0) { intArrayOf(0, 0) },
-                true)
+                getAllValidOpponentMoves(puzzle).shuffled()
+                    .getOrElse(0) { Field(0, 0, Chip.BLACK) }, true)
         }
     }
 
@@ -127,20 +127,20 @@ class GameLogic {
                 || (isMoveValidInRange(turn, (1..min(row, boardSize - 1 - column)).map { puzzle.position[row - it][column + it] }))
     }
 
-    private fun reverseChipsInRange(puzzle: Puzzle, turn: Chip, chips: List<IntArray>) : List<IntArray> {
-        val reversedChips = ArrayList<IntArray>()
+    private fun reverseChipsInRange(puzzle: Puzzle, turn: Chip, chips: List<IntArray>) : List<Field> {
+        val reversedChips = ArrayList<Field>()
         for (indices in chips) {
             if (puzzle.position[indices[0]][indices[1]] == turn) {
                 break
             }
             puzzle.position[indices[0]][indices[1]] = turn
-            reversedChips.add(indices)
+            reversedChips.add(Field(indices[0], indices[1], turn))
         }
         return reversedChips
     }
 
-    fun updateChips(puzzle: Puzzle, turn: Chip, row: Int, column: Int) : List<IntArray> {
-        val chips = ArrayList<IntArray>()
+    fun updateChips(puzzle: Puzzle, turn: Chip, row: Int, column: Int) : List<Field> {
+        val chips = ArrayList<Field>()
         if (isMoveValidInRange(turn, (column-1 downTo 0).map { puzzle.position[row][it] })) {
             chips.addAll(reverseChipsInRange(
                 puzzle, turn,

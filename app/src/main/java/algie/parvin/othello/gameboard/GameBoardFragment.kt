@@ -107,18 +107,21 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
                 movesCounter.text = moves.toString()
             }
         })
-
         animateBoardCreation()
-        black.map {
-            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.white_to_black_avd)
-            (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
-            drawable!!.start()
-        }
-        white.map {
-            val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.black_to_white_avd)
-            (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
-            drawable!!.start()
-        }
+
+        Handler().postDelayed({
+            black.map {
+                val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.spawn_black)
+                (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
+                drawable!!.start()
+            }
+            white.map {
+                val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.spawn_white)
+                (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
+                drawable!!.start()
+            }
+        }, 200)
+
         Handler().postDelayed({
             setChipsOnBoard(white, black, false)
         }, 800)

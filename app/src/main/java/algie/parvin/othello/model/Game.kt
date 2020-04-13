@@ -25,7 +25,7 @@ class Game(val boardSize: Int = 8, val repository: DBRepository) {
         private set
 
     private lateinit var variantsTree: VariantsTree
-    private lateinit var recentPlayerMove: IntArray
+    private lateinit var recentPlayerMove: Field
 
     private fun oppositeColor() : Chip {
         return if (turn == Chip.WHITE) Chip.BLACK else Chip.WHITE
@@ -47,25 +47,25 @@ class Game(val boardSize: Int = 8, val repository: DBRepository) {
         return gameLogic.isSquareFree(puzzle, row, column)
     }
 
-    fun getOpponentMove() : IntArray {
+    fun getOpponentMove() : Field {
         if (puzzle.movesLeft > 0) {
             val opponentMove = gameLogic.findBestMove(puzzle)
             return opponentMove.move
         }
-        return intArrayOf(-1, -1)
+        return Field(0, 0, Chip.BLACK)
     }
 
     fun isMoveValid(row: Int, column: Int) : Boolean {
         return gameLogic.isMoveValid(puzzle, turn, boardSize, row, column)
     }
 
-    fun makePlayerMove(row: Int, column: Int): List<IntArray> {
+    fun makePlayerMove(row: Int, column: Int): List<Field> {
         if (turn == Chip.WHITE) {
             puzzle.movesLeft--
         }
         puzzle.position[row][column] = turn
         val chips = gameLogic.updateChips(puzzle, turn, row, column)
-        recentPlayerMove = intArrayOf(row, column)
+        recentPlayerMove = Field(row, column, turn)
         changeTurn()
         return chips
     }

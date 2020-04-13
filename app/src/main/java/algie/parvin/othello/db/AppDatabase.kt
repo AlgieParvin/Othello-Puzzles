@@ -1,5 +1,7 @@
 package algie.parvin.othello.db
 
+import algie.parvin.othello.model.Chip
+import algie.parvin.othello.model.Field
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -29,26 +31,23 @@ abstract class AppDatabase : RoomDatabase() {
                 Puzzle(
                     1,
                     8,
-                    listOf(intArrayOf(6, 4), intArrayOf(6, 6), intArrayOf(7, 6), intArrayOf(4, 7), intArrayOf(5, 7), intArrayOf(6, 7)),
-                    listOf(intArrayOf(3, 3), intArrayOf(5, 3), intArrayOf(7, 3), intArrayOf(5, 5), intArrayOf(1, 7), intArrayOf(3, 7)),
+                    listOf(Field(6, 4, Chip.BLACK), Field(6, 6, Chip.BLACK),
+                        Field(7, 6, Chip.BLACK), Field(4, 7, Chip.BLACK),
+                        Field(5, 7, Chip.BLACK), Field(6, 7, Chip.BLACK),
+                        Field(3, 3, Chip.WHITE), Field(5, 3, Chip.WHITE),
+                        Field(7, 3, Chip.WHITE), Field(5, 5, Chip.WHITE),
+                        Field(1, 7, Chip.WHITE), Field(3, 7, Chip.WHITE)),
                     false,
                     "(7,7-4,2)(7,5-2,7)",
                     2
                 ),
                 Puzzle(
-                    10,
-                    8,
-                    listOf(intArrayOf(2, 5), intArrayOf(3, 5), intArrayOf(4, 6)),
-                    listOf(intArrayOf(1, 5), intArrayOf(3, 6), intArrayOf(5, 6), intArrayOf(5, 7)),
-                    false,
-                    "(7,7-4,2)(7,5-2,7)",
-                    1
-                ),
-                Puzzle(
                     2,
                     8,
-                    listOf(intArrayOf(4, 2), intArrayOf(1, 3), intArrayOf(2, 4), intArrayOf(4, 4)),
-                    listOf(intArrayOf(5, 3), intArrayOf(3, 5), intArrayOf(5, 7)),
+                    listOf(Field(4, 2, Chip.BLACK), Field(1, 3, Chip.BLACK),
+                        Field(2, 4, Chip.BLACK), Field(4, 4, Chip.BLACK),
+                        Field(5, 3, Chip.WHITE), Field(3, 5, Chip.WHITE),
+                        Field(5, 7, Chip.WHITE)),
                     false,
                     "(3,1-6,2(7,1-4,6)(0,2-2,0)(6,4-4,6))(0,2-6,2(7,1-6,4))",
                     3
@@ -56,8 +55,11 @@ abstract class AppDatabase : RoomDatabase() {
                 Puzzle(
                     3,
                     8,
-                    listOf(intArrayOf(3, 4), intArrayOf(1, 6), intArrayOf(3, 6), intArrayOf(5, 7)),
-                    listOf(intArrayOf(4, 3), intArrayOf(2, 5), intArrayOf(1, 7), intArrayOf(2, 7), intArrayOf(4, 7)),
+                    listOf(Field(3, 4, Chip.BLACK), Field(1, 6, Chip.BLACK),
+                        Field(3, 6, Chip.BLACK), Field(5, 7, Chip.BLACK),
+                        Field(4, 3, Chip.WHITE), Field(2, 5, Chip.WHITE),
+                        Field(1,7, Chip.WHITE),Field(2, 7, Chip.WHITE),
+                        Field(4, 7, Chip.WHITE)),
                     false,
                     "(0,7-3,7(6,7-1,4(0,3-5,2)(4,5-5,6))(4,5-1,4(6,7-5,6)(2,3-3,2)))",
                     4
@@ -65,8 +67,11 @@ abstract class AppDatabase : RoomDatabase() {
                 Puzzle(
                     4,
                     8,
-                    listOf(intArrayOf(1, 1), intArrayOf(1, 2), intArrayOf(2, 4), intArrayOf(1, 6)),
-                    listOf(intArrayOf(1, 0), intArrayOf(1, 7), intArrayOf(2, 5), intArrayOf(4, 5), intArrayOf(2, 7)),
+                    listOf(Field(1, 1, Chip.BLACK), Field(1, 2, Chip.BLACK),
+                        Field(2, 4, Chip.BLACK), Field(1, 6, Chip.BLACK),
+                        Field(1, 0, Chip.WHITE), Field(1, 7, Chip.WHITE),
+                        Field(2, 5, Chip.WHITE), Field(4, 5, Chip.WHITE),
+                        Field(2, 7, Chip.WHITE)),
                     false,
                     "(1,3-0,2(2,3-3,5(*-2,0))" +
                                     "(1,4-3,4(*-2,0))" +
@@ -97,7 +102,7 @@ abstract class AppDatabase : RoomDatabase() {
             val db = Room.databaseBuilder(context, AppDatabase::class.java, "puzzle.db")
                 .fallbackToDestructiveMigration()
                 .build()
-//            initializeDatabase(db)
+            initializeDatabase(db)
             return db
         }
     }

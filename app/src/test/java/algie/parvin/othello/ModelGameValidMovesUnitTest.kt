@@ -2,9 +2,9 @@ package algie.parvin.othello
 
 import algie.parvin.othello.model.DBRepository
 import algie.parvin.othello.model.Game
-import algie.parvin.othello.model.Position
 import algie.parvin.othello.db.Puzzle
-import io.reactivex.Flowable
+import algie.parvin.othello.model.Chip
+import algie.parvin.othello.model.Field
 import io.reactivex.Single
 import org.junit.Assert
 import org.junit.Test
@@ -46,7 +46,10 @@ class ModelGameValidMovesUnitTest {
             black.add(intArrayOf(1, 6))
             black.add(intArrayOf(4, 6))
 
-            puzzle = Puzzle(1, 8, black, white, false, "")
+            val chips: MutableList<Field> = black.map { Field(it[0], it[1], Chip.BLACK) }.toMutableList()
+            chips.addAll(white.map { Field(it[0], it[1], Chip.WHITE) })
+
+            puzzle = Puzzle(1, 8, chips, false, "")
         }
 
         override fun updatePuzzle(puzzle: Puzzle) { }
