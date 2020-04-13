@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 
 import algie.parvin.othello.R
+import algie.parvin.othello.model.Chip
+import algie.parvin.othello.model.Field
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Handler
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.os.postDelayed
 import androidx.lifecycle.Observer
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import kotlinx.android.synthetic.main.fragment_game_board.*
@@ -99,7 +102,8 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         }
     }
 
-    override fun showNewPuzzle(white: List<Int>, black: List<Int>) {
+    override fun showNewPuzzle(chipsByRowsAndColumns: List<List<Field>>, boardSize: Int) {
+        val handler = Handler()
         presenter.getMovesObservable().observe(viewLifecycleOwner, Observer { moves ->
             if (moves == 0) {
                 movesCounter.text = ""
@@ -109,22 +113,22 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         })
         animateBoardCreation()
 
-        Handler().postDelayed({
-            black.map {
-                val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.spawn_black)
-                (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
-                drawable!!.start()
-            }
-            white.map {
-                val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.spawn_white)
-                (board.getChildAt(it) as ImageView).setImageDrawable(drawable)
-                drawable!!.start()
-            }
-        }, 200)
+        for (i in chipsByRowsAndColumns.indices) {
+            handler.postDelayed({
+                chipsByRowsAndColumns[i].forEach {
+                    val drawable = if (it.chip == Chip.BLACK)
+                        AnimatedVectorDrawableCompat.create(activity!!, R.drawable.spawn_black) else
+                        AnimatedVectorDrawableCompat.create(activity!!, R.drawable.spawn_white)
+                    (board.getChildAt(it.row * boardSize + it.column) as ImageView).setImageDrawable(drawable)
+                    drawable!!.start()
+                }
+            }, i.toLong() * 100 + 100)
+        }
 
-        Handler().postDelayed({
-            setChipsOnBoard(white, black, false)
-        }, 800)
+//
+//        Handler().postDelayed({
+//            setChipsOnBoard(white, black, false)
+//        }, 800)
     }
 
     override fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean) {

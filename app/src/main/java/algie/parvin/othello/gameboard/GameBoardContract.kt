@@ -1,5 +1,6 @@
 package algie.parvin.othello.gameboard
 
+import algie.parvin.othello.model.Field
 import androidx.lifecycle.LiveData
 
 class GameBoardContract {
@@ -22,7 +23,7 @@ class GameBoardContract {
         fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean)
         fun setMovesCounter(moves: Int)
 
-        fun showNewPuzzle(white: List<Int>, black: List<Int>)
+        fun showNewPuzzle(chipsByRowsAndColumns: List<List<Field>>, boardSize: Int)
 
         fun onPlayerWin()
         fun onPlayerLose()

@@ -1,5 +1,6 @@
 package algie.parvin.othello.gameboard
 
+import algie.parvin.othello.db.Puzzle
 import algie.parvin.othello.model.*
 import algie.parvin.othello.db.PuzzleRepository
 import android.app.Application
@@ -17,6 +18,14 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
     private val game: Game = Game(repository = PuzzleRepository(app))
     private val movesObservable = MutableLiveData<Int>()
     private lateinit var puzzleSubscriber: Disposable
+
+    private fun separateChipsForStartAnimation(puzzle: Puzzle): List<List<Field>> {
+        return (0 until getBoardSize()).map { i ->
+            puzzle.chips.filter {
+                    chip -> chip.row == i && chip.column <= i || chip.column == i && chip.row <= i
+            }
+        }
+    }
 
     override fun getMovesObservable(): LiveData<Int> {
         return movesObservable
@@ -68,19 +77,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { puzzle ->
                 game.setNewPosition(puzzle)
-                val white = ArrayList<Int>()
-                val black = ArrayList<Int>()
-                for (i in 0 until game.boardSize) {
-                    for (j in 0 until game.boardSize) {
-                        if (game.puzzle.position[i][j] == Chip.WHITE) {
-                            white.add(i * game.boardSize + j)
-                        }
-                        if (game.puzzle.position[i][j] == Chip.BLACK) {
-                            black.add(i * game.boardSize + j)
-                        }
-                    }
-                }
-                view.showNewPuzzle(white, black)
+                view.showNewPuzzle(separateChipsForStartAnimation(puzzle), game.boardSize)
                 movesObservable.postValue(game.puzzle.movesCounter)
             }
     }
@@ -91,19 +88,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { puzzle ->
                 game.setNewPosition(puzzle)
-                val white = ArrayList<Int>()
-                val black = ArrayList<Int>()
-                for (i in 0 until game.boardSize) {
-                    for (j in 0 until game.boardSize) {
-                        if (game.puzzle.position[i][j] == Chip.WHITE) {
-                            white.add(i * game.boardSize + j)
-                        }
-                        if (game.puzzle.position[i][j] == Chip.BLACK) {
-                            black.add(i * game.boardSize + j)
-                        }
-                    }
-                }
-                view.showNewPuzzle(white, black)
+                view.showNewPuzzle(separateChipsForStartAnimation(puzzle), game.boardSize)
                 movesObservable.postValue(game.puzzle.movesCounter)
             }
     }
