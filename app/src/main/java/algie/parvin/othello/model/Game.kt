@@ -1,7 +1,6 @@
 package algie.parvin.othello.model
 
 import algie.parvin.othello.db.Puzzle
-import io.reactivex.Flowable
 import io.reactivex.Single
 
 
@@ -11,9 +10,10 @@ enum class Chip {
 
 
 interface DBRepository {
-    fun updatePuzzle(puzzle: Puzzle)
+    fun openNextPuzzle(puzzle: Puzzle)
     fun getPuzzle(id: Int): Single<Puzzle>
     fun getDefaultPuzzle(): Single<Puzzle>
+    fun getMaxId(): Single<Int>
 }
 
 
@@ -70,7 +70,7 @@ class Game(val boardSize: Int = 8, val repository: DBRepository) {
         return chips
     }
 
-    fun setNewPosition(newPuzzle: Puzzle) {
+    fun setNewPuzzle(newPuzzle: Puzzle) {
         puzzle = newPuzzle
         setMoveWhite()
         puzzle.position = puzzle.getInitialPosition().map { it.clone() }.toTypedArray()
@@ -95,8 +95,8 @@ class Game(val boardSize: Int = 8, val repository: DBRepository) {
         return false
     }
 
-    fun savePuzzleAsSolved() {
-        puzzle.solved = true
-        repository.updatePuzzle(puzzle)
+    fun updateNextPuzzleAsOpened() {
+        puzzle.opened = true
+        repository.openNextPuzzle(puzzle)
     }
 }

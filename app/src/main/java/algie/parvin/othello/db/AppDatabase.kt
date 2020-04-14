@@ -37,7 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
                         Field(3, 3, Chip.WHITE), Field(5, 3, Chip.WHITE),
                         Field(7, 3, Chip.WHITE), Field(5, 5, Chip.WHITE),
                         Field(1, 7, Chip.WHITE), Field(3, 7, Chip.WHITE)),
-                    false,
+                    true,
                     "(7,7-4,2)(7,5-2,7)",
                     2
                 ),

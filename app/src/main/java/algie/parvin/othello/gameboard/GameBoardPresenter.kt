@@ -17,6 +17,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
     private var view: GameBoardContract.ViewInterface = viewFragment
     private val game: Game = Game(repository = PuzzleRepository(app))
     private val movesObservable = MutableLiveData<Int>()
+
     private lateinit var puzzleSubscriber: Disposable
 
     private fun separateChipsForStartAnimation(puzzle: Puzzle): List<List<Field>> {
@@ -63,7 +64,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
         view.reverseChips(indices, isWhiteMove)
 
         if (game.hasPlayerWon()) {
-            game.savePuzzleAsSolved()
+            game.updateNextPuzzleAsOpened()
             view.onPlayerWin()
         }
         if (game.hasPlayerLost()) {
@@ -76,7 +77,7 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { puzzle ->
-                game.setNewPosition(puzzle)
+                game.setNewPuzzle(puzzle)
                 view.showNewPuzzle(separateChipsForStartAnimation(puzzle), game.boardSize)
                 movesObservable.postValue(game.puzzle.movesCounter)
             }
@@ -87,9 +88,20 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { puzzle ->
-                game.setNewPosition(puzzle)
+                game.setNewPuzzle(puzzle)
                 view.showNewPuzzle(separateChipsForStartAnimation(puzzle), game.boardSize)
                 movesObservable.postValue(game.puzzle.movesCounter)
+            }
+    }
+
+    override fun loadNextPuzzle() {
+        game.repository.getMaxId()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { maxId ->
+                if (game.puzzle.id < maxId) {
+                    loadPuzzle(game.puzzle.id + 1)
+                }
             }
     }
 }

@@ -11,6 +11,10 @@ class ModelGameChipReverseUnitTest {
 
     private fun mockRepository(puzzleList: List<Puzzle>) : DBRepository {
        return object : DBRepository {
+           override fun getMaxId(): Single<Int> {
+               return Single.just(1)
+           }
+
            override fun getPuzzle(id: Int): Single<Puzzle> {
                return Single.just(puzzleList[0])
            }
@@ -19,7 +23,7 @@ class ModelGameChipReverseUnitTest {
                return Single.just(puzzleList[0])
            }
 
-           override fun updatePuzzle(puzzle: Puzzle) { }
+           override fun openNextPuzzle(puzzle: Puzzle) { }
 
         }
     }
@@ -45,7 +49,7 @@ class ModelGameChipReverseUnitTest {
 
         val game = Game(boardSize = puzzleList[0].boardSize, repository = repo)
 
-        game.setNewPosition(repo.getPuzzle(0).blockingGet())
+        game.setNewPuzzle(repo.getPuzzle(0).blockingGet())
         if (move == Chip.BLACK) game.setMoveBlack() else game.setMoveWhite()
         game.makePlayerMove(rowMove, columnMove)
         assertEqualChips(game.puzzle.position, board)
@@ -227,7 +231,7 @@ class ModelGameChipReverseUnitTest {
         val repo = mockRepository(puzzleList)
 
         val game = Game(boardSize = boardSize, repository = repo)
-        game.setNewPosition(puzzle)
+        game.setNewPuzzle(puzzle)
         game.makePlayerMove(5, 5)
         assertEqualChips(game.puzzle.position, board)
     }

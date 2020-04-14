@@ -3,7 +3,6 @@ package algie.parvin.othello.db
 import algie.parvin.othello.model.DBRepository
 import android.app.Application
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
@@ -24,9 +23,13 @@ class PuzzleRepository(app: Application) : DBRepository {
         return dao.getDefaultPuzzle()
     }
 
-    override fun updatePuzzle(puzzle: Puzzle) {
-        Completable.fromAction { dao.insert(puzzle) }
+    override fun openNextPuzzle(puzzle: Puzzle) {
+        Completable.fromAction { dao.update(true, puzzle.id + 1) }
             .subscribeOn(Schedulers.io())
             .subscribe()
+    }
+
+    override fun getMaxId(): Single<Int> {
+        return dao.getMaxId()
     }
 }

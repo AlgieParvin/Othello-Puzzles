@@ -52,7 +52,7 @@ class ModelGameValidMovesUnitTest {
             puzzle = Puzzle(1, 8, chips, false, "")
         }
 
-        override fun updatePuzzle(puzzle: Puzzle) { }
+        override fun openNextPuzzle(puzzle: Puzzle) { }
 
         override fun getPuzzle(id: Int): Single<Puzzle> {
             return Single.just(puzzle)
@@ -60,6 +60,10 @@ class ModelGameValidMovesUnitTest {
 
         override fun getDefaultPuzzle(): Single<Puzzle> {
             return Single.just(puzzle)
+        }
+
+        override fun getMaxId(): Single<Int> {
+            return Single.just(1)
         }
     }
 
@@ -72,7 +76,7 @@ class ModelGameValidMovesUnitTest {
 
     init {
         game = Game(boardSize = 8, repository = dummyRepo)
-        game.setNewPosition(dummyRepo.puzzle)
+        game.setNewPuzzle(dummyRepo.puzzle)
 
         validWhiteMoves = ArrayList()
         validWhiteMoves.add(intArrayOf(0, 0))

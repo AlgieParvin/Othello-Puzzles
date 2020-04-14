@@ -15,7 +15,6 @@ import android.os.Handler
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.os.postDelayed
 import androidx.lifecycle.Observer
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import kotlinx.android.synthetic.main.fragment_game_board.*
@@ -77,6 +76,13 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         }
     }
 
+    private fun resetBoard() {
+        for (index in 0 until board.childCount) {
+            (board.getChildAt(index) as ImageView).setImageResource(0)
+        }
+        freezeBoard = false
+    }
+
     private fun reverseChip(index: Int, changeToWhite: Boolean) {
         if (changeToWhite) {
             val drawable = AnimatedVectorDrawableCompat.create(activity!!, R.drawable.black_to_white_avd)
@@ -111,6 +117,7 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
                 movesCounter.text = moves.toString()
             }
         })
+        resetBoard()
         animateBoardCreation()
 
         for (i in chipsByRowsAndColumns.indices) {
@@ -124,11 +131,6 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
                 }
             }, i.toLong() * 100 + 100)
         }
-
-//
-//        Handler().postDelayed({
-//            setChipsOnBoard(white, black, false)
-//        }, 800)
     }
 
     override fun reverseChips(chipIndices: List<Int>, reverseToWhite: Boolean) {
@@ -137,11 +139,11 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
             Handler().postDelayed({
                 presenter.receiveOpponentMove()
                 freezeBoard = true
-            }, 800)
+            }, 600)
         } else {
             Handler().postDelayed({
                 freezeBoard = false
-            }, 750)
+            }, 600)
         }
     }
 
@@ -151,6 +153,9 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
 
     override fun onPlayerWin() {
         Toast.makeText(activity, R.string.player_wins, Toast.LENGTH_SHORT).show()
+        Handler().postDelayed({
+            presenter.loadNextPuzzle()
+        }, 1000)
     }
 
     override fun onPlayerLose() {

@@ -11,7 +11,7 @@ class Puzzle(
     @PrimaryKey var id: Int,
     var boardSize: Int,
     var chips: List<Field>,
-    var solved: Boolean,
+    var opened: Boolean,
     var variants: String,
     val movesCounter: Int = 1) : Cloneable {
 
@@ -32,7 +32,7 @@ class Puzzle(
             -1,
             boardSize,
             chips,
-            solved,
+            opened,
             variants,
             movesCounter
         ).also { p ->

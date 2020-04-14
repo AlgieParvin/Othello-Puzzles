@@ -10,8 +10,10 @@ class GameBoardContract {
         fun handlePlayerMove(square: Int)
         fun receiveOpponentMove()
         fun getMovesObservable(): LiveData<Int>
+
         fun loadPuzzle(id: Int)
         fun loadDefaultPuzzle()
+        fun loadNextPuzzle()
     }
 
     interface ViewInterface {

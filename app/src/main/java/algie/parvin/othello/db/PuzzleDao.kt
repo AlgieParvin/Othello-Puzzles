@@ -8,14 +8,14 @@ import io.reactivex.Single
 @Dao
 interface PuzzleDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(puzzle: Puzzle)
 
     @Delete
     fun delete(puzzle: Puzzle)
 
-    @Update
-    fun update(puzzle: Puzzle)
+    @Query("UPDATE puzzle SET opened = :opened WHERE id = :id")
+    fun update(opened: Boolean, id: Int)
 
     @Query("DELETE FROM puzzle")
     fun deleteAllPuzzles()
@@ -23,9 +23,12 @@ interface PuzzleDao {
     @Query("SELECT * FROM puzzle")
     fun getAllPuzzles(): Single<List<Puzzle>>
 
+    @Query("SELECT MAX(id) FROM puzzle")
+    fun getMaxId(): Single<Int>
+
     @Query("SELECT * FROM puzzle where id = :id")
     fun getPuzzle(id: Int): Single<Puzzle>
 
-    @Query("SELECT * FROM puzzle WHERE id=(SELECT MIN(id) FROM puzzle WHERE solved=0)")
+    @Query("SELECT * FROM puzzle WHERE id=(SELECT MAX(id) FROM puzzle WHERE opened=1)")
     fun getDefaultPuzzle(): Single<Puzzle>
 }
