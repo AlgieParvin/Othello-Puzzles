@@ -15,6 +15,10 @@ class PuzzleRepository(app: Application) : DBRepository {
         dao = database.puzzleDao()
     }
 
+    override fun getAllPuzzles(): Single<List<Puzzle>> {
+        return dao.getAllPuzzles()
+    }
+
     override fun getPuzzle(id: Int): Single<Puzzle> {
         return dao.getPuzzle(id)
     }

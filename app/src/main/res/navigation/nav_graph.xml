@@ -7,16 +7,30 @@
 
     <fragment
         android:id="@+id/puzzleListFragment"
-        android:name="algie.parvin.othello.PuzzleListFragment"
+        android:name="algie.parvin.othello.puzzlelist.PuzzleListFragment"
         android:label="fragment_puzzle_list"
         tools:layout="@layout/fragment_puzzle_list" >
         <action
             android:id="@+id/action_puzzleListFragment_to_gameBoardFragment"
-            app:destination="@id/gameBoardFragment" />
+            app:destination="@+id/gameBoardFragment"
+            app:popUpTo="@id/gameBoardFragment"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/slide_in_down"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"
+            app:popExitAnim="@anim/slide_out_down"/>
     </fragment>
     <fragment
         android:id="@+id/gameBoardFragment"
         android:name="algie.parvin.othello.gameboard.GameBoardFragment"
-        android:label="GameBoardFragment"
-        tools:layout="@layout/fragment_game_board"/>
+        android:label="fragment_game_board"
+        tools:layout="@layout/fragment_game_board">
+        <action
+            android:id="@+id/action_gameBoardFragment_to_puzzleListFragment"
+            app:destination="@id/puzzleListFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_out_up"
+            app:popExitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"/>
+    </fragment>
 </navigation>

@@ -54,6 +54,10 @@ class ModelGameValidMovesUnitTest {
 
         override fun openNextPuzzle(puzzle: Puzzle) { }
 
+        override fun getAllPuzzles(): Single<List<Puzzle>> {
+            return Single.just(listOf(puzzle))
+        }
+
         override fun getPuzzle(id: Int): Single<Puzzle> {
             return Single.just(puzzle)
         }

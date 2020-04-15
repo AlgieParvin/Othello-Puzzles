@@ -11,14 +11,8 @@ interface PuzzleDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(puzzle: Puzzle)
 
-    @Delete
-    fun delete(puzzle: Puzzle)
-
     @Query("UPDATE puzzle SET opened = :opened WHERE id = :id")
     fun update(opened: Boolean, id: Int)
-
-    @Query("DELETE FROM puzzle")
-    fun deleteAllPuzzles()
 
     @Query("SELECT * FROM puzzle")
     fun getAllPuzzles(): Single<List<Puzzle>>

@@ -16,13 +16,19 @@ import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import kotlinx.android.synthetic.main.fragment_game_board.*
 
 
 class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
 
+    private var fragmentView: View? = null
+    private var backstacked = false
+
     private lateinit var presenter: GameBoardContract.PresenterInterface
+    private lateinit var navController: NavController
     private var freezeBoard = false
 
     private fun initializedSquaresOnGrid() {
@@ -166,12 +172,23 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_game_board, container, false)
+        if (fragmentView == null) {
+            fragmentView = inflater.inflate(R.layout.fragment_game_board, container, false)
+            return fragmentView
+        }
+        backstacked = true
+        return fragmentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (backstacked) {
+            return
+        }
+
         presenter = GameBoardPresenter(this, activity!!.application)
+        navController = Navigation.findNavController(view)
 
         removeActionAndStatusBars()
         initializedSquaresOnGrid()
@@ -186,6 +203,10 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
             } else {
                 presenter.loadPuzzle(id)
             }
+        }
+
+        puzzlesButton.setOnClickListener {
+            navController.navigate(R.id.action_gameBoardFragment_to_puzzleListFragment)
         }
     }
 }

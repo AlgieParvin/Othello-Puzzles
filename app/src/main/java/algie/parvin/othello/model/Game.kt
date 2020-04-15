@@ -13,6 +13,7 @@ interface DBRepository {
     fun openNextPuzzle(puzzle: Puzzle)
     fun getPuzzle(id: Int): Single<Puzzle>
     fun getDefaultPuzzle(): Single<Puzzle>
+    fun getAllPuzzles(): Single<List<Puzzle>>
     fun getMaxId(): Single<Int>
 }
 

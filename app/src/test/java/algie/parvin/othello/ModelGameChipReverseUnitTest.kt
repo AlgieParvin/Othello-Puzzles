@@ -11,6 +11,10 @@ class ModelGameChipReverseUnitTest {
 
     private fun mockRepository(puzzleList: List<Puzzle>) : DBRepository {
        return object : DBRepository {
+           override fun getAllPuzzles(): Single<List<Puzzle>> {
+               return Single.just(puzzleList)
+           }
+
            override fun getMaxId(): Single<Int> {
                return Single.just(1)
            }
