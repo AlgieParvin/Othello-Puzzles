@@ -6,4 +6,5 @@
     <string name="player_wins">Puzzle is solved</string>
     <string name="player_lost">Puzzle is not solved</string>
     <string name="puzzleListHint">List of puzzles</string>
+    <string name="redoHint">Start over</string>
 </resources>

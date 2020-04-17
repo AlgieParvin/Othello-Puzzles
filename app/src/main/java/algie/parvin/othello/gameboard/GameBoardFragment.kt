@@ -114,6 +114,19 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         }
     }
 
+    private fun loadPuzzle() {
+        if (arguments == null) {
+            presenter.loadDefaultPuzzle()
+        } else {
+            val id = arguments!!.getInt("ID", -1)
+            if (id == -1) {
+                presenter.loadDefaultPuzzle()
+            } else {
+                presenter.loadPuzzle(id)
+            }
+        }
+    }
+
     override fun showNewPuzzle(chipsByRowsAndColumns: List<List<Field>>, boardSize: Int) {
         val handler = Handler()
         presenter.getMovesObservable().observe(viewLifecycleOwner, Observer { moves ->
@@ -193,20 +206,14 @@ class GameBoardFragment : Fragment(), GameBoardContract.ViewInterface {
         removeActionAndStatusBars()
         initializedSquaresOnGrid()
         attachListenersToSquares()
-
-        if (arguments == null) {
-            presenter.loadDefaultPuzzle()
-        } else {
-            val id = arguments!!.getInt("ID", -1)
-            if (id == -1) {
-                presenter.loadDefaultPuzzle()
-            } else {
-                presenter.loadPuzzle(id)
-            }
-        }
+        loadPuzzle()
 
         puzzlesButton.setOnClickListener {
             navController.navigate(R.id.action_gameBoardFragment_to_puzzleListFragment)
+        }
+
+        redoButton.setOnClickListener {
+            presenter.resetPuzzle()
         }
     }
 }

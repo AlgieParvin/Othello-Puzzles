@@ -104,4 +104,8 @@ class GameBoardPresenter(viewFragment: GameBoardContract.ViewInterface, app: App
                 }
             }
     }
+
+    override fun resetPuzzle() {
+        loadPuzzle(game.puzzle.id)
+    }
 }

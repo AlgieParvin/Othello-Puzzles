@@ -14,6 +14,7 @@ class GameBoardContract {
         fun loadPuzzle(id: Int)
         fun loadDefaultPuzzle()
         fun loadNextPuzzle()
+        fun resetPuzzle()
     }
 
     interface ViewInterface {
